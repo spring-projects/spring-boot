@@ -52,7 +52,7 @@ abstract class AbstractAmqpDockerComposeConnectionDetailsFactory
 
 		AmqpDockerComposeConnectionDetails(RunningService runningService, AmqpEnvironment environment) {
 			super(runningService);
-			this.address = new Address(runningService.host(), runningService.ports().get(AMQP_PORT));
+			this.address = new Address(runningService.host(), runningService.ports().getTcp(AMQP_PORT));
 			this.username = environment.getUsername();
 			this.password = environment.getPassword();
 		}

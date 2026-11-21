@@ -67,7 +67,7 @@ class MongoDockerComposeConnectionDetailsFactory extends DockerComposeConnection
 			}
 			builder.append(service.host());
 			builder.append(":");
-			builder.append(service.ports().get(MONGODB_PORT));
+			builder.append(service.ports().getTcp(MONGODB_PORT));
 			builder.append("/");
 			builder.append((environment.getDatabase() != null) ? environment.getDatabase() : "test");
 			if (environment.getUsername() != null) {

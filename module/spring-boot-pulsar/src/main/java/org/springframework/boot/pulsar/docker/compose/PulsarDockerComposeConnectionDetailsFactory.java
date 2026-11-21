@@ -46,8 +46,8 @@ class PulsarDockerComposeConnectionDetailsFactory
 		PulsarDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			ConnectionPorts ports = service.ports();
-			this.brokerUrl = "pulsar://%s:%s".formatted(service.host(), ports.get(BROKER_PORT));
-			this.adminUrl = "http://%s:%s".formatted(service.host(), ports.get(ADMIN_PORT));
+			this.brokerUrl = "pulsar://%s:%s".formatted(service.host(), ports.getTcp(BROKER_PORT));
+			this.adminUrl = "http://%s:%s".formatted(service.host(), ports.getTcp(ADMIN_PORT));
 		}
 
 		@Override

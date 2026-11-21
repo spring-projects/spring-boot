@@ -84,7 +84,7 @@ class JdbcUrlBuilderTests {
 	private RunningService mockService(int mappedPort, Map<String, String> labels) {
 		RunningService service = mock(RunningService.class);
 		ConnectionPorts ports = mock(ConnectionPorts.class);
-		given(ports.get(1234)).willReturn(mappedPort);
+		given(ports.getTcp(1234)).willReturn(mappedPort);
 		given(service.host()).willReturn("myhost");
 		given(service.ports()).willReturn(ports);
 		given(service.labels()).willReturn(labels);

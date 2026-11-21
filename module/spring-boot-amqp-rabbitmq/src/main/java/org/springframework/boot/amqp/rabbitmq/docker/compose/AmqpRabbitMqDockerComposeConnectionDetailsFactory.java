@@ -57,7 +57,7 @@ class AmqpRabbitMqDockerComposeConnectionDetailsFactory
 			super(service);
 			this.sslBundle = getSslBundle(service);
 			int containerPort = (this.sslBundle != null) ? RABBITMQ_TLS_PORT : RABBITMQ_PORT;
-			this.address = new Address(service.host(), service.ports().get(containerPort));
+			this.address = new Address(service.host(), service.ports().getTcp(containerPort));
 			this.environment = new RabbitEnvironment(service.env());
 		}
 

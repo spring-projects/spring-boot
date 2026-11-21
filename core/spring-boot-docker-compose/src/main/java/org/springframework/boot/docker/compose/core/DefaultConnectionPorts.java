@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.jspecify.annotations.Nullable;
 
@@ -18,6 +19,8 @@ import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.Hos
 import org.springframework.boot.docker.compose.core.DockerCliInspectResponse.NetworkSettings;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -26,20 +29,19 @@ import org.springframework.util.StringUtils;
  * @author Moritz Halbritter
  * @author Andy Wilkinson
  * @author Phillip Webb
+ * @author Daniel Lykov
  */
 class DefaultConnectionPorts implements ConnectionPorts {
 
 	private final Map<ContainerPort, Integer> mappings;
 
-	private final Map<Integer, Integer> portMappings;
+	private final MultiValueMap<Integer, String> protocols;
 
 	DefaultConnectionPorts(DockerCliInspectResponse inspectResponse) {
 		this.mappings = !isHostNetworkMode(inspectResponse)
 				? buildMappingsForNetworkSettings(inspectResponse.networkSettings())
 				: buildMappingsForHostNetworking(inspectResponse.config());
-		Map<Integer, Integer> portMappings = new HashMap<>();
-		this.mappings.forEach((containerPort, hostPort) -> portMappings.put(containerPort.number(), hostPort));
-		this.portMappings = Collections.unmodifiableMap(portMappings);
+		this.protocols = buildProtocolMappings(this.mappings.keySet());
 	}
 
 	private static boolean isHostNetworkMode(DockerCliInspectResponse inspectResponse) {
@@ -68,7 +70,7 @@ class DefaultConnectionPorts implements ConnectionPorts {
 		return !StringUtils.hasLength(ip) || ip.contains(".");
 	}
 
-	private static int getPortNumber(HostPort hostPort) {
+	private int getPortNumber(HostPort hostPort) {
 		return Integer.parseInt(hostPort.hostPort());
 	}
 
@@ -84,9 +86,28 @@ class DefaultConnectionPorts implements ConnectionPorts {
 		return Collections.unmodifiableMap(mappings);
 	}
 
+	private MultiValueMap<Integer, String> buildProtocolMappings(Set<ContainerPort> containerPorts) {
+		MultiValueMap<Integer, String> protocols = new LinkedMultiValueMap<>();
+		containerPorts.forEach((containerPort) -> protocols.add(containerPort.number(), containerPort.protocol()));
+		return CollectionUtils.unmodifiableMultiValueMap(protocols);
+	}
+
 	@Override
+	@SuppressWarnings("removal")
 	public int get(int containerPort) {
-		Integer hostPort = this.portMappings.get(containerPort);
+		List<String> protocols = this.protocols.get(containerPort);
+		Assert.state(protocols != null,
+				() -> "No host port mapping found for container port %s".formatted(containerPort));
+		Assert.state(protocols.size() == 1,
+				() -> "Multiple host port mapping found for container port %s with different protocols %s"
+					.formatted(containerPort, protocols));
+		return get(containerPort, protocols.get(0));
+	}
+
+	@Override
+	public int get(int containerPort, String protocol) {
+		Assert.hasText(protocol, "'protocol' must not be empty");
+		Integer hostPort = this.mappings.get(new ContainerPort(containerPort, protocol));
 		Assert.state(hostPort != null,
 				() -> "No host port mapping found for container port %s".formatted(containerPort));
 		return hostPort;

@@ -47,7 +47,7 @@ class HazelcastDockerComposeConnectionDetailsFactory
 		HazelcastDockerComposeConnectionDetails(RunningService service) {
 			super(service);
 			this.host = service.host();
-			this.port = service.ports().get(DEFAULT_PORT);
+			this.port = service.ports().getTcp(DEFAULT_PORT);
 			this.environment = new HazelcastEnvironment(service.env());
 		}
 

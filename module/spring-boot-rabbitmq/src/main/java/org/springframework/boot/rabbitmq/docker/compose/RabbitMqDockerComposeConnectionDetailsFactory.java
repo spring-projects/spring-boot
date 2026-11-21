@@ -61,7 +61,7 @@ class RabbitMqDockerComposeConnectionDetailsFactory
 			this.environment = new RabbitMqEnvironment(service.env());
 			this.sslBundle = getSslBundle(service);
 			int containerPort = (this.sslBundle != null) ? RABBITMQ_TLS_PORT : RABBITMQ_PORT;
-			this.addresses = List.of(new Address(service.host(), service.ports().get(containerPort)));
+			this.addresses = List.of(new Address(service.host(), service.ports().getTcp(containerPort)));
 		}
 
 		@Override

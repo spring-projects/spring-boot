@@ -51,7 +51,7 @@ class RedisDockerComposeConnectionDetailsFactory
 
 		RedisDockerComposeConnectionDetails(RunningService service) {
 			super(service);
-			this.standalone = Standalone.of(service.host(), service.ports().get(REDIS_PORT));
+			this.standalone = Standalone.of(service.host(), service.ports().getTcp(REDIS_PORT));
 			this.sslBundle = getSslBundle(service);
 		}
 
