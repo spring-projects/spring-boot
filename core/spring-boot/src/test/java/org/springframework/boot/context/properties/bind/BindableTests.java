@@ -190,6 +190,15 @@ class BindableTests {
 	}
 
 	@Test
+	void withAnnotationsDoesNotForgetBindRestrictions() {
+		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
+		Bindable<String> bindable = Bindable.of(String.class)
+			.withBindRestrictions(BindRestriction.NO_DIRECT_PROPERTY)
+			.withAnnotations(annotation);
+		assertThat(bindable.hasBindRestriction(BindRestriction.NO_DIRECT_PROPERTY)).isTrue();
+	}
+
+	@Test
 	void whenTypeCouldUseJavaBeanOrValueObjectJavaBeanBindingCanBeSpecified() {
 		BindMethod bindMethod = Bindable.of(JavaBeanOrValueObject.class)
 			.withBindMethod(BindMethod.JAVA_BEAN)
