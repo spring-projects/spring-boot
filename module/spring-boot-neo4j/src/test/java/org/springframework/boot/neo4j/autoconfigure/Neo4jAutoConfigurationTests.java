@@ -151,6 +151,32 @@ class Neo4jAutoConfigurationTests {
 	}
 
 	@Test
+	void authenticationWithUserInfoInUriShouldEnableBasicAuth() {
+		Neo4jProperties properties = new Neo4jProperties();
+		properties.setUri(URI.create("bolt://user:secret@localhost:7687"));
+		PropertiesNeo4jConnectionDetails connectionDetails = new PropertiesNeo4jConnectionDetails(properties, null);
+		assertThat(connectionDetails.getAuthToken()).isEqualTo(AuthTokens.basic("user", "secret"));
+	}
+
+	@Test
+	void authenticationWithEncodedUserInfoInUriShouldEnableBasicAuth() {
+		Neo4jProperties properties = new Neo4jProperties();
+		properties.setUri(URI.create("bolt://user%3A1:p%40ssword@localhost:7687"));
+		PropertiesNeo4jConnectionDetails connectionDetails = new PropertiesNeo4jConnectionDetails(properties, null);
+		assertThat(connectionDetails.getAuthToken()).isEqualTo(AuthTokens.basic("user:1", "p@ssword"));
+	}
+
+	@Test
+	void authenticationWithUsernamePropertyShouldOverrideUserInfoInUri() {
+		Neo4jProperties properties = new Neo4jProperties();
+		properties.setUri(URI.create("bolt://uriuser:urisecret@localhost:7687"));
+		properties.getAuthentication().setUsername("propuser");
+		properties.getAuthentication().setPassword("propsecret");
+		PropertiesNeo4jConnectionDetails connectionDetails = new PropertiesNeo4jConnectionDetails(properties, null);
+		assertThat(connectionDetails.getAuthToken()).isEqualTo(AuthTokens.basic("propuser", "propsecret"));
+	}
+
+	@Test
 	void authenticationWithUsernameShouldEnableBasicAuth() {
 		Neo4jProperties properties = new Neo4jProperties();
 		properties.getAuthentication().setUsername("Farin");
