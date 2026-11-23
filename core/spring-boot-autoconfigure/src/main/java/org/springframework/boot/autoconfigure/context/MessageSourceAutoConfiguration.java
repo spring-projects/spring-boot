@@ -27,6 +27,8 @@ import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration.MessageSourceRuntimeHints;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration.ResourceBundleCondition;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -107,21 +109,28 @@ public final class MessageSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ClassLoader classLoader = context.getClassLoader();
-			String basename = context.getEnvironment().getProperty("spring.messages.basename", "messages");
+			List<String> basenames = Binder.get(context.getEnvironment())
+				.bind("spring.messages.basename", Bindable.listOf(String.class))
+				.orElse(List.of("messages"));
 			return Cache.forClassLoader(classLoader)
-				.computeIfAbsent(basename, () -> getMatchOutcomeForBasename(classLoader, basename));
+				.computeIfAbsent(basenames, () -> getMatchOutcomeForBasenames(classLoader, basenames));
 		}
 
-		private ConditionOutcome getMatchOutcomeForBasename(@Nullable ClassLoader classLoader, String basename) {
+		private ConditionOutcome getMatchOutcomeForBasenames(@Nullable ClassLoader classLoader,
+				List<String> basenames) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ResourceBundle");
-			for (String name : StringUtils.tokenizeToStringArray(basename, ",")) {
-				for (Resource resource : getResources(classLoader, name)) {
-					if (resource.exists()) {
-						return ConditionOutcome.match(message.found("bundle").items(resource));
+			for (String basename : basenames) {
+				if (StringUtils.hasText(basename)) {
+					for (Resource resource : getResources(classLoader, basename.trim())) {
+						if (resource.exists()) {
+							return ConditionOutcome.match(message.found("bundle").items(resource));
+						}
 					}
 				}
 			}
-			return ConditionOutcome.noMatch(message.didNotFind("bundle with basename " + basename).atAll());
+			return ConditionOutcome.noMatch(message
+				.didNotFind("bundle with basename " + StringUtils.collectionToCommaDelimitedString(basenames))
+				.atAll());
 		}
 
 		private Resource[] getResources(@Nullable ClassLoader classLoader, String name) {
@@ -144,14 +153,14 @@ public final class MessageSourceAutoConfiguration {
 		private static final Map<ClassLoader, Cache> classloaderCaches = new ConcurrentReferenceHashMap<>(16,
 				ReferenceType.SOFT);
 
-		private final @Nullable Map<String, ConditionOutcome> outcomes;
+		private final @Nullable Map<List<String>, ConditionOutcome> outcomes;
 
-		private Cache(@Nullable Map<String, ConditionOutcome> outcomes) {
+		private Cache(@Nullable Map<List<String>, ConditionOutcome> outcomes) {
 			this.outcomes = outcomes;
 		}
 
-		ConditionOutcome computeIfAbsent(String basename, Supplier<ConditionOutcome> action) {
-			return (this.outcomes != null) ? this.outcomes.computeIfAbsent(basename, (key) -> action.get())
+		ConditionOutcome computeIfAbsent(List<String> basenames, Supplier<ConditionOutcome> action) {
+			return (this.outcomes != null) ? this.outcomes.computeIfAbsent(basenames, (key) -> action.get())
 					: action.get();
 		}
 
