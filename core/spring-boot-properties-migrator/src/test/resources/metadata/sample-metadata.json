@@ -47,6 +47,7 @@
       "name": "custom.map-no-replacement",
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "deprecation": {
+        "level": "error",
         "reason": "This is no longer supported."
       }
     },

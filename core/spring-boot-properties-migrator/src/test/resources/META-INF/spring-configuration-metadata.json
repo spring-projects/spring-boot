@@ -1,0 +1,23 @@
+{
+  "properties": [
+    {
+      "name": "test.deprecated-without-replacement",
+      "type": "java.lang.String",
+      "deprecation": {
+        "reason": "This property is deprecated but still supported."
+      }
+    },
+    {
+      "name": "test.deprecated-incompatible-type",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "warning",
+        "replacement": "test.replacement"
+      }
+    },
+    {
+      "name": "test.replacement",
+      "type": "java.lang.Integer"
+    }
+  ]
+}

@@ -13,35 +13,50 @@ import java.util.stream.Collectors;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.configurationmetadata.Deprecation.Level;
+
 /**
  * Provides a properties migration report.
  *
  * @author Stephane Nicoll
  * @author Moritz Halbritter
+ * @author Steve Rutherford
  */
 class PropertiesMigrationReport {
 
 	private final Map<String, LegacyProperties> content = new LinkedHashMap<>();
 
 	/**
-	 * Return a report for all the properties that were automatically renamed. If no such
-	 * properties were found, return {@code null}.
-	 * @return a report with the configurations keys that should be renamed
+	 * Return a report for properties that were automatically renamed or are deprecated
+	 * but still supported. If no such properties were found, return {@code null}.
+	 * @return a report with the configuration keys that should be migrated
 	 */
 	@Nullable String getWarningReport() {
 		Map<String, List<PropertyMigration>> content = getContent(LegacyProperties::getRenamed);
-		if (content.isEmpty()) {
+		Map<String, List<PropertyMigration>> deprecated = getContent(LegacyProperties::getDeprecated);
+		if (content.isEmpty() && deprecated.isEmpty()) {
 			return null;
 		}
 		StringBuilder report = new StringBuilder();
-		report.append(String
-			.format("%nThe use of configuration keys that have been renamed was found in the environment:%n%n"));
-		append(report, content);
-		report.append(String.format("%n"));
-		report.append("Each configuration key has been temporarily mapped to its "
-				+ "replacement for your convenience. To silence this warning, please "
-				+ "update your configuration to use the new keys.");
-		report.append(String.format("%n"));
+		if (!content.isEmpty()) {
+			report.append(String
+				.format("%nThe use of configuration keys that have been renamed was found in the environment:%n%n"));
+			append(report, content);
+			report.append(String.format("%n"));
+			report.append("Each configuration key has been temporarily mapped to its "
+					+ "replacement for your convenience. To silence this warning, please "
+					+ "update your configuration to use the new keys.");
+			report.append(String.format("%n"));
+		}
+		if (!deprecated.isEmpty()) {
+			report.append(String
+				.format("%nThe use of configuration keys that are deprecated was found in the environment:%n%n"));
+			append(report, deprecated);
+			report.append(String.format("%n"));
+			report.append("These configuration keys are still supported but could not be migrated automatically. "
+					+ "Please refer to the release notes or reference guide for potential alternatives.");
+			report.append(String.format("%n"));
+		}
 		return report.toString();
 	}
 
@@ -111,7 +126,18 @@ class PropertiesMigrationReport {
 		}
 
 		List<PropertyMigration> getUnsupported() {
-			return this.properties.stream().filter((property) -> !property.isCompatibleType()).toList();
+			return getUnmapped(Level.ERROR);
+		}
+
+		List<PropertyMigration> getDeprecated() {
+			return getUnmapped(Level.WARNING);
+		}
+
+		private List<PropertyMigration> getUnmapped(Level level) {
+			return this.properties.stream()
+				.filter((property) -> !property.isCompatibleType())
+				.filter((property) -> property.getMetadata().getDeprecation().getLevel() == level)
+				.toList();
 		}
 
 	}

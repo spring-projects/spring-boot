@@ -13,9 +13,14 @@ import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
+import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepositoryJsonBuilder;
+import org.springframework.boot.configurationmetadata.Deprecation;
+import org.springframework.boot.configurationmetadata.Deprecation.Level;
 import org.springframework.boot.configurationmetadata.SimpleConfigurationMetadataRepository;
 import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.origin.Origin;
@@ -37,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Moritz Halbritter
+ * @author Steve Rutherford
  */
 class PropertiesMigrationReporterTests {
 
@@ -82,6 +88,50 @@ class PropertiesMigrationReporterTests {
 		this.environment.getPropertySources().addFirst(loadPropertySource("test", "config/config-relaxed.properties"));
 		String report = createWarningReport(loadRepository("metadata/sample-metadata.json"));
 		assertThat(report).isNull();
+	}
+
+	@ParameterizedTest
+	@CsvSource({ "wrong.one, sample-metadata.json, WARNING", "wrong.one, sample-metadata.json, ERROR",
+			"wrong.inconvertible, type-conversion-metadata.json, WARNING",
+			"wrong.inconvertible, type-conversion-metadata.json, ERROR",
+			"deprecated.six.test, sample-metadata-invalid-replacement.json, WARNING",
+			"deprecated.six.test, sample-metadata-invalid-replacement.json, ERROR" })
+	void unmappedPropertiesAreReportedAtTheirDeprecationLevel(String name, String metadata, Level level) {
+		ConfigurationMetadataRepository repository = loadRepository("metadata/" + metadata);
+		ConfigurationMetadataProperty property = repository.getAllProperties().get(name);
+		assertThat(property).isNotNull();
+		property.getDeprecation().setLevel(level);
+		this.environment.getPropertySources().addFirst(new MapPropertySource("test", Map.of(name, "value")));
+		PropertiesMigrationReport report = createAnalyzer(repository).getReport();
+		if (level == Level.WARNING) {
+			assertThat(report.getWarningReport()).contains("configuration keys that are deprecated", "Key: " + name,
+					"Reason:", "could not be migrated automatically");
+			assertThat(report.getWarningReport()).doesNotContain("temporarily mapped");
+			assertThat(report.getErrorReport()).isNull();
+		}
+		else {
+			assertThat(report.getErrorReport()).contains("configuration keys that are no longer supported",
+					"Key: " + name);
+			assertThat(report.getWarningReport()).isNull();
+		}
+		assertThat(mapToNames(this.environment.getPropertySources())).containsExactly("test", "mockProperties");
+		assertThat(this.environment.getProperty(name)).isEqualTo("value");
+	}
+
+	@Test
+	void warningReportIncludesRenamedAndUnmappedDeprecatedProperties() {
+		ConfigurationMetadataRepository repository = loadRepository("metadata/sample-metadata.json");
+		ConfigurationMetadataProperty property = repository.getAllProperties().get("wrong.one");
+		assertThat(property).isNotNull();
+		property.getDeprecation().setLevel(Level.WARNING);
+		this.environment.getPropertySources()
+			.addFirst(new MapPropertySource("test", Map.of("wrong.one", "value", "wrong.two", "another")));
+		PropertiesMigrationReport report = createAnalyzer(repository).getReport();
+		assertThat(report.getWarningReport()).containsSubsequence("configuration keys that have been renamed",
+				"Key: wrong.two", "temporarily mapped", "configuration keys that are deprecated", "Key: wrong.one",
+				"could not be migrated automatically");
+		assertThat(report.getErrorReport()).isNull();
+		assertThat(this.environment.getProperty("test.two")).isEqualTo("another");
 	}
 
 	@Test
@@ -167,6 +217,19 @@ class PropertiesMigrationReporterTests {
 		assertThat(report).isNotNull();
 		assertThat(report).contains("Key: custom.map-no-replacement.key")
 			.contains("Reason: This is no longer supported.");
+	}
+
+	@Test
+	void mapPropertiesDeprecatedAtDefaultLevelNoReplacement() {
+		this.environment.getPropertySources()
+			.addFirst(new MapPropertySource("test", Map.of("custom.map-no-replacement.key", "value")));
+		ConfigurationMetadataRepository repository = loadRepository("metadata/sample-metadata.json");
+		ConfigurationMetadataProperty property = repository.getAllProperties().get("custom.map-no-replacement");
+		assertThat(property).isNotNull();
+		property.setDeprecation(new Deprecation());
+		PropertiesMigrationReport report = createAnalyzer(repository).getReport();
+		assertThat(report.getWarningReport()).contains("Key: custom.map-no-replacement.key");
+		assertThat(report.getErrorReport()).isNull();
 	}
 
 	@Test

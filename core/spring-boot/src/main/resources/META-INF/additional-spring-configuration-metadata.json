@@ -601,6 +601,7 @@
       "description": "Display the banner when the application runs.",
       "defaultValue": true,
       "deprecation": {
+        "level": "error",
         "replacement": "spring.main.banner-mode",
         "since": "1.3.0"
       }
@@ -623,6 +624,7 @@
       "sourceType": "org.springframework.boot.SpringApplication",
       "description": "Run the application in a web environment (auto-detected by default).",
       "deprecation": {
+        "level": "error",
         "replacement": "spring.main.web-application-type",
         "since": "2.0.0"
       }

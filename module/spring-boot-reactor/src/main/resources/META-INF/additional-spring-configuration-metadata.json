@@ -6,6 +6,7 @@
       "description": "Whether Reactor should collect stacktrace information at runtime.",
       "defaultValue": false,
       "deprecation": {
+        "level": "error",
         "replacement": "spring.reactor.debug-agent.enabled",
         "since": "2.2.0"
       }
