@@ -178,18 +178,6 @@ class PulsarAutoConfigurationTests {
 				.isSameAs(customizers));
 	}
 
-	@Test
-	void pulsarTransactionManagerWithTransactionExecutionListenersIsConfigured() {
-		TransactionExecutionListener listener = mock(TransactionExecutionListener.class);
-		this.contextRunner.withPropertyValues("spring.pulsar.transaction.enabled=true")
-			.withConfiguration(AutoConfigurations.of(TransactionManagerCustomizationAutoConfiguration.class))
-			.withBean(TransactionExecutionListener.class, () -> listener)
-			.run((context) -> {
-				PulsarTransactionManager transactionManager = context.getBean(PulsarTransactionManager.class);
-				assertThat(transactionManager.getTransactionExecutionListeners()).containsExactly(listener);
-			});
-	}
-
 	@Nested
 	class ClientTests {
 
@@ -1129,6 +1117,18 @@ class PulsarAutoConfigurationTests {
 		void whenTransactionEnabledTrueTransactionManagerIsAutoConfigured() {
 			this.contextRunner.withPropertyValues("spring.pulsar.transaction.enabled=true")
 				.run((context) -> assertThat(context).hasSingleBean(PulsarAwareTransactionManager.class));
+		}
+
+		@Test
+		void pulsarTransactionManagerWithTransactionExecutionListenersIsConfigured() {
+			TransactionExecutionListener listener = mock(TransactionExecutionListener.class);
+			this.contextRunner.withPropertyValues("spring.pulsar.transaction.enabled=true")
+				.withConfiguration(AutoConfigurations.of(TransactionManagerCustomizationAutoConfiguration.class))
+				.withBean(TransactionExecutionListener.class, () -> listener)
+				.run((context) -> {
+					PulsarTransactionManager transactionManager = context.getBean(PulsarTransactionManager.class);
+					assertThat(transactionManager.getTransactionExecutionListeners()).containsExactly(listener);
+				});
 		}
 
 	}
