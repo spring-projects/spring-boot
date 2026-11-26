@@ -228,6 +228,11 @@ Such caches can be created explicitly with a `CacheManagerCustomizer` bean that 
 Alternatively, named caches and caches on demand can be async by setting configprop:spring.cache.caffeine.cache-mode[] to `async`.
 Regular, native, caches can still be configured explicitly using a customizer bean.
 
+When the cache mode is `async`, a javadoc:com.github.benmanes.caffeine.cache.CacheLoader[] bean is used as described above.
+If no such bean is defined, an javadoc:com.github.benmanes.caffeine.cache.AsyncCacheLoader[] bean is automatically associated to the cache manager instead.
+As with a `CacheLoader`, it must be defined as `AsyncCacheLoader<Object, Object>`.
+An `AsyncCacheLoader` bean is not used when the cache mode is `native` or when a `CacheLoader` bean is also defined.
+
 
 
 [[io.caching.provider.cache2k]]

@@ -6,6 +6,7 @@ package org.springframework.boot.cache.autoconfigure;
 
 import java.util.List;
 
+import com.github.benmanes.caffeine.cache.AsyncCacheLoader;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
@@ -37,8 +38,10 @@ class CaffeineCacheConfiguration {
 	@Bean
 	CaffeineCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
 			ObjectProvider<Caffeine<Object, Object>> caffeine, ObjectProvider<CaffeineSpec> caffeineSpec,
-			ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
-		CaffeineCacheManager cacheManager = createCacheManager(cacheProperties, caffeine, caffeineSpec, cacheLoader);
+			ObjectProvider<CacheLoader<Object, Object>> cacheLoader,
+			ObjectProvider<AsyncCacheLoader<Object, Object>> asyncCacheLoader) {
+		CaffeineCacheManager cacheManager = createCacheManager(cacheProperties, caffeine, caffeineSpec, cacheLoader,
+				asyncCacheLoader);
 		List<String> cacheNames = cacheProperties.getCacheNames();
 		if (!CollectionUtils.isEmpty(cacheNames)) {
 			cacheManager.setCacheNames(cacheNames);
@@ -48,14 +51,16 @@ class CaffeineCacheConfiguration {
 
 	private CaffeineCacheManager createCacheManager(CacheProperties cacheProperties,
 			ObjectProvider<Caffeine<Object, Object>> caffeine, ObjectProvider<CaffeineSpec> caffeineSpec,
-			ObjectProvider<CacheLoader<Object, Object>> cacheLoader) {
+			ObjectProvider<CacheLoader<Object, Object>> cacheLoader,
+			ObjectProvider<AsyncCacheLoader<Object, Object>> asyncCacheLoader) {
 		CaffeineCacheManager cacheManager = new CaffeineCacheManager();
 		CacheProperties.Caffeine caffeineProperties = cacheProperties.getCaffeine();
-		if (caffeineProperties.getCacheMode() == CacheMode.ASYNC) {
+		boolean asyncCacheMode = caffeineProperties.getCacheMode() == CacheMode.ASYNC;
+		if (asyncCacheMode) {
 			cacheManager.setAsyncCacheMode(true);
 		}
 		setCacheBuilder(caffeineProperties, caffeineSpec.getIfAvailable(), caffeine.getIfAvailable(), cacheManager);
-		cacheLoader.ifAvailable(cacheManager::setCacheLoader);
+		setCacheLoader(asyncCacheMode, cacheLoader, asyncCacheLoader, cacheManager);
 		return cacheManager;
 	}
 
@@ -70,6 +75,17 @@ class CaffeineCacheConfiguration {
 		}
 		else if (caffeine != null) {
 			cacheManager.setCaffeine(caffeine);
+		}
+	}
+
+	private void setCacheLoader(boolean asyncCacheMode, ObjectProvider<CacheLoader<Object, Object>> cacheLoader,
+			ObjectProvider<AsyncCacheLoader<Object, Object>> asyncCacheLoader, CaffeineCacheManager cacheManager) {
+		CacheLoader<Object, Object> loader = cacheLoader.getIfAvailable();
+		if (loader != null) {
+			cacheManager.setCacheLoader(loader);
+		}
+		else if (asyncCacheMode) {
+			asyncCacheLoader.ifAvailable(cacheManager::setAsyncCacheLoader);
 		}
 	}
 

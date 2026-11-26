@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import javax.cache.Caching;
@@ -20,8 +21,12 @@ import javax.cache.configuration.MutableConfiguration;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 
+import com.github.benmanes.caffeine.cache.AsyncCacheLoader;
+import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
+import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.CaffeineSpec;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.hazelcast.cache.impl.HazelcastServerCachingProvider;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -30,6 +35,7 @@ import org.cache2k.extra.spring.SpringCache2kCacheManager;
 import org.infinispan.configuration.cache.ConfigurationBuilder;
 import org.infinispan.jcache.embedded.JCachingProvider;
 import org.infinispan.spring.embedded.provider.SpringEmbeddedCacheManager;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.BeanCreationException;
@@ -38,6 +44,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.cache.autoconfigure.MockCachingProvider.MockCacheManager;
 import org.springframework.boot.hazelcast.autoconfigure.HazelcastAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.testsupport.classpath.resources.WithResource;
 import org.springframework.cache.Cache;
 import org.springframework.cache.Cache.ValueWrapper;
@@ -827,6 +834,94 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Test
+	void caffeineCacheWithCacheLoader() {
+		this.contextRunner
+			.withUserConfiguration(DefaultCacheConfiguration.class, CaffeineCacheLoaderConfiguration.class)
+			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cacheNames=foo")
+			.run((context) -> {
+				CaffeineCache cache = getCaffeineCache(context, "foo");
+				assertThat(cache.getNativeCache()).isInstanceOf(LoadingCache.class);
+				assertThatIllegalStateException().isThrownBy(cache::getAsyncCache);
+				assertThat(getValue(cache, "1")).isEqualTo("sync-1");
+			});
+	}
+
+	@Test
+	void caffeineCacheWithCacheLoaderAndAsyncCacheMode() {
+		this.contextRunner
+			.withUserConfiguration(DefaultCacheConfiguration.class, CaffeineCacheLoaderConfiguration.class)
+			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.caffeine.cache-mode=async",
+					"spring.cache.cacheNames=foo")
+			.run(hasAsyncCache("sync-1"));
+	}
+
+	@Test
+	void caffeineCacheWithAsyncCacheLoaderAndAsyncCacheMode() {
+		this.contextRunner
+			.withUserConfiguration(DefaultCacheConfiguration.class, CaffeineAsyncCacheLoaderConfiguration.class)
+			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.caffeine.cache-mode=async",
+					"spring.cache.cacheNames=foo")
+			.run(hasAsyncCache("async-1"));
+	}
+
+	@Test
+	void caffeineCacheWithAsyncCacheLoaderAndNativeCacheModeIgnoresAsyncCacheLoader() {
+		this.contextRunner
+			.withUserConfiguration(DefaultCacheConfiguration.class, CaffeineAsyncCacheLoaderConfiguration.class)
+			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cacheNames=foo")
+			.run((context) -> {
+				CaffeineCache cache = getCaffeineCache(context, "foo");
+				assertThat(cache.getNativeCache()).isNotInstanceOf(LoadingCache.class);
+				assertThatIllegalStateException().isThrownBy(cache::getAsyncCache);
+				assertThat(cache.get("1")).isNull();
+			});
+	}
+
+	@Test
+	void caffeineCacheWithCacheLoaderAndAsyncCacheLoaderUsesCacheLoader() {
+		this.contextRunner
+			.withUserConfiguration(DefaultCacheConfiguration.class, CaffeineCacheLoaderConfiguration.class,
+					CaffeineAsyncCacheLoaderConfiguration.class)
+			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.cacheNames=foo")
+			.run((context) -> {
+				CaffeineCache cache = getCaffeineCache(context, "foo");
+				assertThat(cache.getNativeCache()).isInstanceOf(LoadingCache.class);
+				assertThat(getValue(cache, "1")).isEqualTo("sync-1");
+			});
+	}
+
+	@Test
+	void caffeineCacheWithCacheLoaderAndAsyncCacheLoaderAndAsyncCacheModeUsesCacheLoader() {
+		this.contextRunner
+			.withUserConfiguration(DefaultCacheConfiguration.class, CaffeineCacheLoaderConfiguration.class,
+					CaffeineAsyncCacheLoaderConfiguration.class)
+			.withPropertyValues("spring.cache.type=caffeine", "spring.cache.caffeine.cache-mode=async",
+					"spring.cache.cacheNames=foo")
+			.run(hasAsyncCache("sync-1"));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> hasAsyncCache(String expected) {
+		return (context) -> {
+			CaffeineCache cache = getCaffeineCache(context, "foo");
+			assertThat(cache.getAsyncCache()).isInstanceOf(AsyncLoadingCache.class);
+			assertThat(getValue(cache, "1")).isEqualTo(expected);
+		};
+	}
+
+	private CaffeineCache getCaffeineCache(AssertableApplicationContext context, String name) {
+		CaffeineCacheManager manager = getCacheManager(context, CaffeineCacheManager.class);
+		Cache cache = manager.getCache(name);
+		assertThat(cache).isInstanceOf(CaffeineCache.class);
+		return (CaffeineCache) cache;
+	}
+
+	private @Nullable Object getValue(Cache cache, Object key) {
+		ValueWrapper wrapper = cache.get(key);
+		assertThat(wrapper).isNotNull();
+		return wrapper.get();
+	}
+
+	@Test
 	void autoConfiguredCacheManagerCanBeSwapped() {
 		this.contextRunner.withUserConfiguration(CacheManagerPostProcessorConfiguration.class)
 			.withPropertyValues("spring.cache.type=caffeine")
@@ -1100,6 +1195,26 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 		@Bean
 		CaffeineSpec caffeineSpec() {
 			return CaffeineSpec.parse("recordStats");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CaffeineCacheLoaderConfiguration {
+
+		@Bean
+		CacheLoader<Object, Object> cacheLoader() {
+			return (key) -> "sync-" + key;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CaffeineAsyncCacheLoaderConfiguration {
+
+		@Bean
+		AsyncCacheLoader<Object, Object> asyncCacheLoader() {
+			return (key, executor) -> CompletableFuture.completedFuture("async-" + key);
 		}
 
 	}
