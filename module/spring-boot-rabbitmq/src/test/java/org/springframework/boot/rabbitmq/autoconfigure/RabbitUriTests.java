@@ -194,8 +194,8 @@ class RabbitUriTests {
 	@Test
 	void determineVirtualHostWhenHasNoUserDefinedVirtualHost() {
 		RabbitUri uri = RabbitUri.of("rabbit.example.com");
-		assertThat(uri.determinePassword("fallback")).isEqualTo("fallback");
-		assertThat(uri.determinePassword(null)).isNull();
+		assertThat(uri.determineVirtualHost("fallback")).isEqualTo("fallback");
+		assertThat(uri.determineVirtualHost(null)).isNull();
 	}
 
 	@Test
