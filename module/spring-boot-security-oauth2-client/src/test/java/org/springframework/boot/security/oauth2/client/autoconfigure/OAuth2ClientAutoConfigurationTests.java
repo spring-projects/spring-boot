@@ -83,6 +83,19 @@ class OAuth2ClientAutoConfigurationTests {
 			});
 	}
 
+	@Test
+	void propertiesAreValidatedWithUserDefinedClientRegistrationRepository() {
+		this.contextRunner
+			.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-secret=secret",
+					REGISTRATION_PREFIX + ".foo.provider=github")
+			.withBean(ClientRegistrationRepository.class,
+					() -> new InMemoryClientRegistrationRepository(getClientRegistration("test", "test")))
+			.run((context) -> assertThat(context).getFailure()
+				.rootCause()
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage("Client id of registration 'foo' must not be empty."));
+	}
+
 	private ClientRegistration getClientRegistration(String id, String userInfoUri) {
 		ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(id);
 		builder.clientName("foo")
