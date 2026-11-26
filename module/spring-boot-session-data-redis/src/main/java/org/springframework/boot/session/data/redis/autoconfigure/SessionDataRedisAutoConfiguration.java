@@ -137,7 +137,7 @@ public final class SessionDataRedisAutoConfiguration {
 	@ConditionalOnClass({ ReactiveRedisConnectionFactory.class, ReactiveRedisSessionRepository.class })
 	@ConditionalOnMissingBean(ReactiveSessionRepository.class)
 	@ConditionalOnBean(ReactiveRedisConnectionFactory.class)
-	class ReactiveRedisSessionConfiguration {
+	static class ReactiveRedisSessionConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
 		@ConditionalOnProperty(name = "spring.session.data.redis.repository-type", havingValue = "default",
