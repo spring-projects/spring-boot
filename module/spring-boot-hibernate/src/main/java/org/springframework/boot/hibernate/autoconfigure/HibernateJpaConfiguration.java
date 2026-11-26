@@ -138,13 +138,12 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	@Override
 	protected Map<String, Object> getVendorProperties(DataSource dataSource) {
 		Supplier<String> defaultDdlMode = () -> this.defaultDdlAutoProvider.getDefaultDdlAuto(dataSource);
-		Map<String, Object> vendorProperties = new LinkedHashMap<>(
-				this.hibernateProperties.determineHibernateProperties(getProperties().getProperties(),
-						new HibernateSettings().ddlAuto(defaultDdlMode)
-							.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers)));
-		if (!vendorProperties.containsKey(PROVIDER_DISABLES_AUTOCOMMIT) && !isJta()
-				&& isDataSourceAutoCommitDisabled(dataSource)) {
-			vendorProperties.put(PROVIDER_DISABLES_AUTOCOMMIT, "true");
+		HibernateSettings hibernateSettings = new HibernateSettings().ddlAuto(defaultDdlMode)
+			.hibernatePropertiesCustomizers(this.hibernatePropertiesCustomizers);
+		Map<String, Object> vendorProperties = new LinkedHashMap<>(this.hibernateProperties
+			.determineHibernateProperties(getProperties().getProperties(), hibernateSettings));
+		if (!vendorProperties.containsKey(PROVIDER_DISABLES_AUTOCOMMIT)) {
+			configureProviderDisablesAutocommit(vendorProperties, dataSource);
 		}
 		return vendorProperties;
 	}
@@ -167,6 +166,12 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 		// transaction manager on its own.
 		else if (!runningOnWebSphere()) {
 			configureSpringJtaPlatform(vendorProperties, jtaTransactionManager);
+		}
+	}
+
+	private void configureProviderDisablesAutocommit(Map<String, Object> vendorProperties, DataSource dataSource) {
+		if (isDataSourceAutoCommitDisabled(dataSource) && !isJta()) {
+			vendorProperties.put(PROVIDER_DISABLES_AUTOCOMMIT, "true");
 		}
 	}
 
