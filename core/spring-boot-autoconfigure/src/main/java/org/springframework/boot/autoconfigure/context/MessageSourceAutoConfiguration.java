@@ -21,6 +21,8 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration.MessageSourceRuntimeHints;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
@@ -77,7 +79,9 @@ public final class MessageSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ClassLoader classLoader = context.getClassLoader();
-			String basename = context.getEnvironment().getProperty("spring.messages.basename", "messages");
+			String basename = StringUtils.collectionToCommaDelimitedString(Binder.get(context.getEnvironment())
+				.bind("spring.messages.basename", Bindable.listOf(String.class))
+				.orElse(List.of("messages")));
 			return Cache.forClassLoader(classLoader)
 				.computeIfAbsent(basename, () -> getMatchOutcomeForBasename(classLoader, basename));
 		}

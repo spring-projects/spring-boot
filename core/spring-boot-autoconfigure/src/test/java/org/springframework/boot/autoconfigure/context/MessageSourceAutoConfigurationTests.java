@@ -177,6 +177,19 @@ class MessageSourceAutoConfigurationTests {
 	}
 
 	@Test
+	@WithTestMessagesPropertiesResource
+	@WithTestMessages2PropertiesResource
+	void testMultipleMessageSourceCreatedWithIndexedBasename() {
+		this.contextRunner
+			.withPropertyValues("spring.messages.basename[0]=test/messages",
+					"spring.messages.basename[1]=test/messages2")
+			.run((context) -> {
+				assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
+				assertThat(context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK)).isEqualTo("bar-bar");
+			});
+	}
+
+	@Test
 	@WithResource(name = "test/my messages.properties", content = "foo=bar")
 	void testMultipleMessageSourceCreatedWithSpacesInBasename() {
 		this.contextRunner.withPropertyValues("spring.messages.basename=test/my messages, test/messages2")
