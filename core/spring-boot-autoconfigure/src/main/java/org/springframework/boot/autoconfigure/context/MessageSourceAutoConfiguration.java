@@ -109,28 +109,23 @@ public final class MessageSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ClassLoader classLoader = context.getClassLoader();
-			List<String> basenames = Binder.get(context.getEnvironment())
+			String basename = StringUtils.collectionToCommaDelimitedString(Binder.get(context.getEnvironment())
 				.bind("spring.messages.basename", Bindable.listOf(String.class))
-				.orElse(List.of("messages"));
+				.orElse(List.of("messages")));
 			return Cache.forClassLoader(classLoader)
-				.computeIfAbsent(basenames, () -> getMatchOutcomeForBasenames(classLoader, basenames));
+				.computeIfAbsent(basename, () -> getMatchOutcomeForBasename(classLoader, basename));
 		}
 
-		private ConditionOutcome getMatchOutcomeForBasenames(@Nullable ClassLoader classLoader,
-				List<String> basenames) {
+		private ConditionOutcome getMatchOutcomeForBasename(@Nullable ClassLoader classLoader, String basename) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("ResourceBundle");
-			for (String basename : basenames) {
-				if (StringUtils.hasText(basename)) {
-					for (Resource resource : getResources(classLoader, basename.trim())) {
-						if (resource.exists()) {
-							return ConditionOutcome.match(message.found("bundle").items(resource));
-						}
+			for (String name : StringUtils.tokenizeToStringArray(basename, ",")) {
+				for (Resource resource : getResources(classLoader, name)) {
+					if (resource.exists()) {
+						return ConditionOutcome.match(message.found("bundle").items(resource));
 					}
 				}
 			}
-			return ConditionOutcome.noMatch(message
-				.didNotFind("bundle with basename " + StringUtils.collectionToCommaDelimitedString(basenames))
-				.atAll());
+			return ConditionOutcome.noMatch(message.didNotFind("bundle with basename " + basename).atAll());
 		}
 
 		private Resource[] getResources(@Nullable ClassLoader classLoader, String name) {
@@ -153,14 +148,14 @@ public final class MessageSourceAutoConfiguration {
 		private static final Map<ClassLoader, Cache> classloaderCaches = new ConcurrentReferenceHashMap<>(16,
 				ReferenceType.SOFT);
 
-		private final @Nullable Map<List<String>, ConditionOutcome> outcomes;
+		private final @Nullable Map<String, ConditionOutcome> outcomes;
 
-		private Cache(@Nullable Map<List<String>, ConditionOutcome> outcomes) {
+		private Cache(@Nullable Map<String, ConditionOutcome> outcomes) {
 			this.outcomes = outcomes;
 		}
 
-		ConditionOutcome computeIfAbsent(List<String> basenames, Supplier<ConditionOutcome> action) {
-			return (this.outcomes != null) ? this.outcomes.computeIfAbsent(basenames, (key) -> action.get())
+		ConditionOutcome computeIfAbsent(String basename, Supplier<ConditionOutcome> action) {
+			return (this.outcomes != null) ? this.outcomes.computeIfAbsent(basename, (key) -> action.get())
 					: action.get();
 		}
 

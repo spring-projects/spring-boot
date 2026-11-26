@@ -9,9 +9,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
@@ -33,7 +31,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -146,30 +143,6 @@ class MessageSourceAutoConfigurationTests {
 			.run((context) -> {
 				assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
 				assertThat(context.getMessage("foo-foo", null, "Foo-Foo message", Locale.UK)).isEqualTo("bar-bar");
-			});
-	}
-
-	@Test
-	@WithResource(name = "test/my,messages.properties", content = "foo=bar")
-	void testMessageSourceCreatedWithCommaInIndexedBasename() {
-		this.contextRunner.withPropertyValues("spring.messages.basename[0]=test/my,messages").run((context) -> {
-			assertThat(context).hasSingleBean(MessageSource.class);
-			assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
-		});
-	}
-
-	@Test
-	@WithTestMessagesPropertiesResource
-	void testMessageSourceCreatedWithSurroundingWhitespaceInBasenameList() {
-		this.contextRunner
-			.withInitializer(
-					(context) -> context.getEnvironment()
-						.getPropertySources()
-						.addFirst(new MapPropertySource("test",
-								Map.of("spring.messages.basename", List.of(" test/messages ")))))
-			.run((context) -> {
-				assertThat(context).hasSingleBean(MessageSource.class);
-				assertThat(context.getMessage("foo", null, "Foo message", Locale.UK)).isEqualTo("bar");
 			});
 	}
 
