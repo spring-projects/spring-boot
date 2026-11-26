@@ -673,6 +673,38 @@ class HibernateJpaAutoConfigurationTests {
 	}
 
 	@Test
+	void providerDisablesAutoCommitIsConfiguredWhenBuilderDataSourceHasAutoCommitDisabled() {
+		this.contextRunner
+			.withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
+					"spring.datasource.hikari.auto-commit:true", "spring.jpa.hibernate.ddl-auto:none")
+			.run((context) -> {
+				HikariDataSource customDataSource = new HikariDataSource();
+				customDataSource.setAutoCommit(false);
+				Map<String, Object> jpaProperties = context.getBean(EntityManagerFactoryBuilder.class)
+					.dataSource(customDataSource)
+					.build()
+					.getJpaPropertyMap();
+				assertThat(jpaProperties).contains(entry("hibernate.connection.provider_disables_autocommit", "true"));
+			});
+	}
+
+	@Test
+	void providerDisablesAutoCommitIsNotConfiguredWhenBuilderDataSourceHasAutoCommitEnabled() {
+		this.contextRunner
+			.withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
+					"spring.datasource.hikari.auto-commit:false", "spring.jpa.hibernate.ddl-auto:none")
+			.run((context) -> {
+				HikariDataSource customDataSource = new HikariDataSource();
+				customDataSource.setAutoCommit(true);
+				Map<String, Object> jpaProperties = context.getBean(EntityManagerFactoryBuilder.class)
+					.dataSource(customDataSource)
+					.build()
+					.getJpaPropertyMap();
+				assertThat(jpaProperties).doesNotContainKeys("hibernate.connection.provider_disables_autocommit");
+			});
+	}
+
+	@Test
 	void providerDisablesAutoCommitIsNotConfiguredIfPropertyIsSet() {
 		this.contextRunner
 			.withPropertyValues("spring.datasource.type:" + HikariDataSource.class.getName(),
