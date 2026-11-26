@@ -816,8 +816,8 @@ bom {
 	}
 	library("Jackson 2 Bom", "${jackson2Version}") {
 		prohibit {
-			versionRange "[2.22.0,2.23.0)"
-			because "it is not LTS (https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.22)"
+			versionRange "[2.22.0,2.24.0)"
+			because "it is not LTS (https://github.com/FasterXML/jackson/wiki/Jackson-Release-2.23)"
 		}
 		group("com.fasterxml.jackson") {
 			bom("jackson-bom")
@@ -831,8 +831,8 @@ bom {
 	}
 	library("Jackson Bom", "${jacksonVersion}") {
 		prohibit {
-			versionRange "[3.2.0,3.3.0)"
-			because "it is not LTS (https://github.com/FasterXML/jackson/wiki/Jackson-Release-3.2)"
+			versionRange "[3.2.0,3.4.0)"
+			because "it is not LTS (https://github.com/FasterXML/jackson/wiki/Jackson-Release-3.3)"
 		}
 		group("tools.jackson") {
 			bom("jackson-bom") {
