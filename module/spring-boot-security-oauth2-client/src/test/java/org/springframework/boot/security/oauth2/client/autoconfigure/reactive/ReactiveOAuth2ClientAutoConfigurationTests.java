@@ -101,6 +101,36 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 	}
 
 	@Test
+	void propertiesAreValidatedWithUserDefinedClientRegistrationRepository() {
+		this.contextRunner
+			.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-secret=secret",
+					REGISTRATION_PREFIX + ".foo.provider=github")
+			.withBean(ReactiveClientRegistrationRepository.class,
+					() -> new InMemoryReactiveClientRegistrationRepository(getClientRegistration("test", "test")))
+			.run((context) -> assertThat(context).getFailure()
+				.rootCause()
+				.isInstanceOf(IllegalStateException.class)
+				.hasMessage("Client id of registration 'foo' must not be empty."));
+	}
+
+	@Test
+	void clientRegistrationRepositoryBeanIsConditionalOnMissingBean() {
+		this.contextRunner
+			.withPropertyValues(REGISTRATION_PREFIX + ".foo.client-id=abcd",
+					REGISTRATION_PREFIX + ".foo.client-secret=secret", REGISTRATION_PREFIX + ".foo.provider=github")
+			.withBean("testClientRegistrationRepository", ReactiveClientRegistrationRepository.class,
+					() -> new InMemoryReactiveClientRegistrationRepository(getClientRegistration("test", "test")))
+			.run((context) -> {
+				assertThat(context).hasSingleBean(ReactiveClientRegistrationRepository.class);
+				assertThat(context).hasBean("testClientRegistrationRepository");
+				ReactiveClientRegistrationRepository repository = context
+					.getBean(ReactiveClientRegistrationRepository.class);
+				assertThat(repository.findByRegistrationId("foo").block(Duration.ofSeconds(30))).isNull();
+				assertThat(repository.findByRegistrationId("test").block(Duration.ofSeconds(30))).isNotNull();
+			});
+	}
+
+	@Test
 	void autoConfigurationConditionalOnClassFlux() {
 		assertWhenClassNotPresent(Flux.class);
 	}

@@ -25,7 +25,6 @@ import org.springframework.security.oauth2.client.registration.ReactiveClientReg
  * Reactive OAuth2 Client configurations.
  *
  * @author Madhura Bhave
- * @author WooSeung Kim
  */
 class ReactiveOAuth2ClientConfigurations {
 
