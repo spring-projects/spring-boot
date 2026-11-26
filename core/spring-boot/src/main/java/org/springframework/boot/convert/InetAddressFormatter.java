@@ -29,7 +29,9 @@ final class InetAddressFormatter implements Formatter<InetAddress> {
 			return InetAddress.getByName(text);
 		}
 		catch (UnknownHostException ex) {
-			throw new IllegalStateException("Unknown host " + text, ex);
+			ParseException exception = new ParseException("Unknown host " + text, 0);
+			exception.initCause(ex);
+			throw exception;
 		}
 	}
 

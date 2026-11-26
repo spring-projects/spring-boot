@@ -6,8 +6,11 @@ package org.springframework.boot.convert;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.text.ParseException;
+import java.util.Locale;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.convert.ConversionFailedException;
@@ -48,6 +51,17 @@ class InetAddressFormatterTests {
 		assumingThat(!isResolvable("ireallydontexist.example.com"),
 				() -> assertThatExceptionOfType(ConversionFailedException.class)
 					.isThrownBy(() -> conversionService.convert(missingDomain, InetAddress.class)));
+	}
+
+	@Test
+	void parseWhenHostDoesNotExistShouldThrowParseException() {
+		String missingDomain = "ireallydontexist.example.com";
+		assumingThat(!isResolvable(missingDomain), () -> {
+			InetAddressFormatter formatter = new InetAddressFormatter();
+			assertThatExceptionOfType(ParseException.class)
+				.isThrownBy(() -> formatter.parse(missingDomain, Locale.getDefault()))
+				.withCauseInstanceOf(UnknownHostException.class);
+		});
 	}
 
 	private boolean isResolvable(String host) {
