@@ -3,6 +3,7 @@
   "properties": [
     {
       "name": "spring.data.cassandra.compression",
+      "type": "org.springframework.boot.cassandra.autoconfigure.CassandraProperties$Compression",
       "defaultValue": "none",
       "deprecation": {
         "replacement": "spring.cassandra.compression",
@@ -21,6 +22,7 @@
     },
     {
       "name": "spring.data.cassandra.connection.connect-timeout",
+      "type": "java.time.Duration",
       "defaultValue": "5s",
       "deprecation": {
         "replacement": "spring.cassandra.connection.connect-timeout",
@@ -30,6 +32,7 @@
     },
     {
       "name": "spring.data.cassandra.connection.init-query-timeout",
+      "type": "java.time.Duration",
       "defaultValue": "5s",
       "deprecation": {
         "replacement": "spring.cassandra.connection.init-query-timeout",
@@ -39,6 +42,7 @@
     },
     {
       "name": "spring.data.cassandra.contact-points",
+      "type": "java.util.List<java.lang.String>",
       "defaultValue": [
         "127.0.0.1:9042"
       ],
@@ -50,6 +54,7 @@
     },
     {
       "name": "spring.data.cassandra.controlconnection.timeout",
+      "type": "java.time.Duration",
       "defaultValue": "5s",
       "deprecation": {
         "replacement": "spring.cassandra.controlconnection.timeout",
@@ -105,6 +110,7 @@
     },
     {
       "name": "spring.data.cassandra.pool.heartbeat-interval",
+      "type": "java.time.Duration",
       "defaultValue": "30s",
       "deprecation": {
         "replacement": "spring.cassandra.pool.heartbeat-interval",
@@ -114,6 +120,7 @@
     },
     {
       "name": "spring.data.cassandra.pool.idle-timeout",
+      "type": "java.time.Duration",
       "defaultValue": "5s",
       "deprecation": {
         "replacement": "spring.cassandra.pool.idle-timeout",
@@ -175,6 +182,7 @@
     },
     {
       "name": "spring.data.cassandra.request.page-size",
+      "type": "java.lang.Integer",
       "defaultValue": 5000,
       "deprecation": {
         "replacement": "spring.cassandra.request.page-size",
@@ -229,6 +237,7 @@
     },
     {
       "name": "spring.data.cassandra.request.throttler.type",
+      "type": "org.springframework.boot.cassandra.autoconfigure.CassandraProperties$ThrottlerType",
       "defaultValue": "none",
       "deprecation": {
         "replacement": "spring.cassandra.request.throttler.type",
@@ -238,6 +247,7 @@
     },
     {
       "name": "spring.data.cassandra.request.timeout",
+      "type": "java.time.Duration",
       "defaultValue": "2s",
       "deprecation": {
         "replacement": "spring.cassandra.request.timeout",

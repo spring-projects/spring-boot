@@ -3,6 +3,7 @@
   "properties": [
     {
       "name": "spring.reactor.stacktrace-mode.enabled",
+      "type": "java.lang.Boolean",
       "description": "Whether Reactor should collect stacktrace information at runtime.",
       "defaultValue": false,
       "deprecation": {
