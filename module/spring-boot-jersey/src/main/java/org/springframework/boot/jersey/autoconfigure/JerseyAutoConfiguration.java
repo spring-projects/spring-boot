@@ -15,11 +15,14 @@ import jakarta.ws.rs.ext.ContextResolver;
 import jakarta.xml.bind.annotation.XmlElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.glassfish.jersey.jackson.JacksonFeature;
+import org.glassfish.jersey.jackson3.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.SpringComponentProvider;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.glassfish.jersey.servlet.ServletProperties;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule;
+import tools.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationModule.Priority;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +32,14 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingFilterBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jackson.autoconfigure.JsonMapperBuilderCustomizer;
 import org.springframework.boot.web.servlet.DynamicRegistrationBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -54,9 +59,11 @@ import org.springframework.web.filter.RequestContextFilter;
  * @author Andy Wilkinson
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Kristoffer Larsen Hopland
  * @since 4.0.0
  */
-@AutoConfiguration(afterName = { "org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration" })
+@AutoConfiguration(afterName = { "org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration",
+		"org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration" })
 @ConditionalOnClass({ SpringComponentProvider.class, ServletRegistration.class })
 @ConditionalOnBean(type = "org.glassfish.jersey.server.ResourceConfig")
 @ConditionalOnWebApplication(type = Type.SERVLET)
@@ -164,15 +171,59 @@ public final class JerseyAutoConfiguration implements ServletContextAware {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(JacksonFeature.class)
+	@ConditionalOnClass({ JacksonFeature.class, JsonMapper.class })
+	@ConditionalOnSingleCandidate(JsonMapper.class)
+	static class JacksonResourceConfigCustomizerConfiguration {
+
+		@Bean
+		ResourceConfigCustomizer jacksonResourceConfigCustomizer(JsonMapper jsonMapper) {
+			return (ResourceConfig config) -> {
+				config.register(JacksonFeature.class);
+				config.register(new JsonMapperContextResolver(jsonMapper), ContextResolver.class);
+			};
+		}
+
+		@Configuration(proxyBeanMethods = false)
+		@ConditionalOnClass({ JsonMapperBuilderCustomizer.class, JakartaXmlBindAnnotationModule.class,
+				XmlElement.class })
+		static class JaxbJsonMapperBuilderCustomizerConfiguration {
+
+			@Bean
+			JsonMapperBuilderCustomizer jaxbJsonMapperBuilderCustomizer() {
+				return (builder) -> builder
+					.addModule(new JakartaXmlBindAnnotationModule().setPriority(Priority.SECONDARY));
+			}
+
+		}
+
+		private static final class JsonMapperContextResolver implements ContextResolver<JsonMapper> {
+
+			private final JsonMapper jsonMapper;
+
+			private JsonMapperContextResolver(JsonMapper jsonMapper) {
+				this.jsonMapper = jsonMapper;
+			}
+
+			@Override
+			public JsonMapper getContext(Class<?> type) {
+				return this.jsonMapper;
+			}
+
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(org.glassfish.jersey.jackson.JacksonFeature.class)
+	@ConditionalOnMissingClass("org.glassfish.jersey.jackson3.JacksonFeature")
 	@ConditionalOnSingleCandidate(com.fasterxml.jackson.databind.ObjectMapper.class)
 	static class Jackson2ResourceConfigCustomizerConfiguration {
 
 		@Bean
-		ResourceConfigCustomizer jacksonResourceConfigCustomizer(
+		ResourceConfigCustomizer jackson2ResourceConfigCustomizer(
 				com.fasterxml.jackson.databind.ObjectMapper objectMapper) {
 			return (ResourceConfig config) -> {
-				config.register(JacksonFeature.class);
+				config.register(org.glassfish.jersey.jackson.JacksonFeature.class);
 				config.register(new ObjectMapperContextResolver(objectMapper), ContextResolver.class);
 			};
 		}

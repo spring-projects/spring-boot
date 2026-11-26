@@ -6,14 +6,15 @@ package org.springframework.boot.jersey.autoconfigure;
 
 import java.util.Collections;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
 import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletException;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
+import tools.jackson.databind.json.JsonMapper;
+import tools.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.jersey.autoconfigure.JerseyAutoConfiguration.JerseyWebApplicationInitializer;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
@@ -63,31 +64,25 @@ class JerseyAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void whenJaxbIsAvailableTheObjectMapperIsCustomizedWithAnAnnotationIntrospector() {
-		this.contextRunner
-			.withConfiguration(AutoConfigurations
-				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
-			.run((context) -> {
-				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-				assertThat(objectMapper.getSerializationConfig()
-					.getAnnotationIntrospector()
-					.allIntrospectors()
-					.stream()
-					.filter(JakartaXmlBindAnnotationIntrospector.class::isInstance)).hasSize(1);
-			});
+	void whenJaxbIsAvailableTheJsonMapperIsCustomizedWithAnAnnotationIntrospector() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class)).run((context) -> {
+			JsonMapper jsonMapper = context.getBean(JsonMapper.class);
+			assertThat(jsonMapper.serializationConfig()
+				.getAnnotationIntrospector()
+				.allIntrospectors()
+				.stream()
+				.filter(JakartaXmlBindAnnotationIntrospector.class::isInstance)).hasSize(1);
+		});
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void whenJaxbIsNotAvailableTheObjectMapperCustomizationBacksOff() {
-		this.contextRunner
-			.withConfiguration(AutoConfigurations
-				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
+	void whenJaxbIsNotAvailableTheJsonMapperCustomizationBacksOff() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withPropertyValues("spring.jackson.find-and-add-modules=false")
 			.withClassLoader(new FilteredClassLoader("jakarta.xml.bind.annotation"))
 			.run((context) -> {
-				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-				assertThat(objectMapper.getSerializationConfig()
+				JsonMapper jsonMapper = context.getBean(JsonMapper.class);
+				assertThat(jsonMapper.serializationConfig()
 					.getAnnotationIntrospector()
 					.allIntrospectors()
 					.stream()
@@ -96,15 +91,13 @@ class JerseyAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings("removal")
-	void whenJacksonJaxbModuleIsNotAvailableTheObjectMapperCustomizationBacksOff() {
-		this.contextRunner
-			.withConfiguration(AutoConfigurations
-				.of(org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class))
-			.withClassLoader(new FilteredClassLoader(JakartaXmlBindAnnotationIntrospector.class))
+	void whenJacksonJaxbModuleIsNotAvailableTheJsonMapperCustomizationBacksOff() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+			.withPropertyValues("spring.jackson.find-and-add-modules=false")
+			.withClassLoader(new FilteredClassLoader("tools.jackson.module.jakarta.xmlbind"))
 			.run((context) -> {
-				ObjectMapper objectMapper = context.getBean(ObjectMapper.class);
-				assertThat(objectMapper.getSerializationConfig()
+				JsonMapper jsonMapper = context.getBean(JsonMapper.class);
+				assertThat(jsonMapper.serializationConfig()
 					.getAnnotationIntrospector()
 					.allIntrospectors()
 					.stream()

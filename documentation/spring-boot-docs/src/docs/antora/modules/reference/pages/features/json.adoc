@@ -23,6 +23,9 @@ Auto-configuration for Jackson 3 is provided and Jackson is part of `spring-boot
 When Jackson is on the classpath a javadoc:tools.jackson.databind.json.JsonMapper[] bean is automatically configured.
 Several configuration properties are provided for xref:how-to:spring-mvc.adoc#howto.spring-mvc.customize-jackson-jsonmapper[customizing the configuration of the javadoc:tools.jackson.databind.json.JsonMapper[]].
 
+Jersey uses the auto-configured javadoc:tools.jackson.databind.json.JsonMapper[] by default.
+See xref:web/servlet.adoc#web.servlet.jersey[] for details.
+
 
 
 [[features.json.jackson.custom-serializers-and-deserializers]]

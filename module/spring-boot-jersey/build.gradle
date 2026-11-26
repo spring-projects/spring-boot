@@ -18,7 +18,7 @@ dependencies {
 	api("org.glassfish.jersey.containers:jersey-container-servlet")
 	api("org.glassfish.jersey.core:jersey-server")
 	api("org.glassfish.jersey.ext:jersey-spring6")
-	api("org.glassfish.jersey.media:jersey-media-json-jackson")
+	api("org.glassfish.jersey.media:jersey-media-json-jackson3")
 
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
 	compileOnly("com.google.code.findbugs:jsr305")
@@ -28,15 +28,17 @@ dependencies {
 	optional(project(":core:spring-boot-autoconfigure"))
 	optional(project(":module:spring-boot-actuator-autoconfigure"))
 	optional(project(":module:spring-boot-health"))
+	optional(project(":module:spring-boot-jackson"))
 	optional(project(":module:spring-boot-jackson2"))
 	optional(project(":module:spring-boot-micrometer-metrics"))
 	optional(project(":module:spring-boot-micrometer-observation"))
 	optional("io.projectreactor:reactor-core")
+	optional("org.glassfish.jersey.media:jersey-media-json-jackson")
 	optional("org.glassfish.jersey.ext:jersey-micrometer")
 
 	testFixturesApi(testFixtures(project(":module:spring-boot-actuator")))
 	testFixturesImplementation(project(":module:spring-boot-tomcat"))
-	testFixturesRuntimeOnly(project(":module:spring-boot-jackson2"))
+	testFixturesRuntimeOnly(project(":module:spring-boot-jackson"))
 
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":module:spring-boot-restclient"))
@@ -51,4 +53,9 @@ dependencies {
 
 tasks.named("compileTestJava") {
 	options.nullability.checking = "tests"
+}
+
+tasks.named("test") {
+	// Jersey auto-discovers its Jackson 2 provider so remove it to test the default Jackson 3 support
+	classpath = classpath.filter { !it.name.startsWith("jersey-media-json-jackson-") }
 }
