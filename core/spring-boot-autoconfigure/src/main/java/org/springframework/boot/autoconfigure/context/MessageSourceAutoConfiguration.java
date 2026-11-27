@@ -4,6 +4,7 @@
 
 package org.springframework.boot.autoconfigure.context;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 

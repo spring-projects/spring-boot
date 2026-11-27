@@ -12,7 +12,7 @@ import org.eclipse.jetty.util.Promise;
 import org.eclipse.jetty.util.SocketAddressResolver;
 
 /**
- * Jetty {@link SocketAddressResolver} that filters using a {@link InetAddressFilter}.
+ * Jetty {@link SocketAddressResolver} that filters using an {@link InetAddressFilter}.
  *
  * @author Phillip Webb
  */

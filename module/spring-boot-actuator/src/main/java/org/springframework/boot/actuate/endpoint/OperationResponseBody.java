@@ -22,12 +22,12 @@ import org.springframework.lang.Contract;
 public interface OperationResponseBody {
 
 	/**
-	 * Return a {@link OperationResponseBody} {@link Map} instance containing entries from
-	 * the given {@code map}.
+	 * Return an {@link OperationResponseBody} {@link Map} instance containing entries
+	 * from the given {@code map}.
 	 * @param <K> the key type
 	 * @param <V> the value type
 	 * @param map the source map or {@code null}
-	 * @return a {@link OperationResponseBody} version of the map or {@code null}
+	 * @return an {@link OperationResponseBody} version of the map or {@code null}
 	 */
 	@Contract("!null -> !null")
 	static <K, V> @Nullable Map<K, V> of(@Nullable Map<K, V> map) {

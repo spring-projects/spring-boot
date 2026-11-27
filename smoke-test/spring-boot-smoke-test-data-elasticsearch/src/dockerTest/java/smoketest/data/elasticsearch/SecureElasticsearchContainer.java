@@ -11,7 +11,7 @@ import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
 /**
- * A {@link ElasticsearchContainer} for Elasticsearch with SSL configuration.
+ * An {@link ElasticsearchContainer} for Elasticsearch with SSL configuration.
  *
  * @author Moritz Halbritter
  */

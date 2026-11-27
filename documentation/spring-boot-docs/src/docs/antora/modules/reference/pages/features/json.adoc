@@ -64,7 +64,7 @@ The registration is performed by Spring Boot's javadoc:org.springframework.boot.
 == Jackson 2
 
 Deprecated auto-configuration for Jackson 2 is provided by the `spring-boot-jackson2` module.
-When this module is on the classpath a javadoc:com.fasterxml.jackson.databind.ObjectMapper[] bean is automatically configured.
+When this module is on the classpath an javadoc:com.fasterxml.jackson.databind.ObjectMapper[] bean is automatically configured.
 Several `+spring.jackson2.*+` configuration properties are provided for customizing the configuration.
 To take more control, define one or more javadoc:org.springframework.boot.jackson2.autoconfigure.Jackson2ObjectMapperBuilderCustomizer[] beans.
 

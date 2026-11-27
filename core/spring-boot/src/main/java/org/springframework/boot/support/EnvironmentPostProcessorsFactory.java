@@ -33,7 +33,7 @@ public interface EnvironmentPostProcessorsFactory {
 			ConfigurableBootstrapContext bootstrapContext);
 
 	/**
-	 * Return a {@link EnvironmentPostProcessorsFactory} backed by
+	 * Return an {@link EnvironmentPostProcessorsFactory} backed by
 	 * {@code spring.factories}.
 	 * @param classLoader the source class loader
 	 * @return an {@link EnvironmentPostProcessorsFactory} instance
@@ -44,7 +44,7 @@ public interface EnvironmentPostProcessorsFactory {
 	}
 
 	/**
-	 * Return a {@link EnvironmentPostProcessorsFactory} that reflectively creates post
+	 * Return an {@link EnvironmentPostProcessorsFactory} that reflectively creates post
 	 * processors from the given classes.
 	 * @param classes the post processor classes
 	 * @return an {@link EnvironmentPostProcessorsFactory} instance
@@ -54,7 +54,7 @@ public interface EnvironmentPostProcessorsFactory {
 	}
 
 	/**
-	 * Return a {@link EnvironmentPostProcessorsFactory} that reflectively creates post
+	 * Return an {@link EnvironmentPostProcessorsFactory} that reflectively creates post
 	 * processors from the given class names.
 	 * @param classNames the post processor class names
 	 * @return an {@link EnvironmentPostProcessorsFactory} instance
@@ -64,7 +64,7 @@ public interface EnvironmentPostProcessorsFactory {
 	}
 
 	/**
-	 * Return a {@link EnvironmentPostProcessorsFactory} that reflectively creates post
+	 * Return an {@link EnvironmentPostProcessorsFactory} that reflectively creates post
 	 * processors from the given class names.
 	 * @param classLoader the source class loader
 	 * @param classNames the post processor class names

@@ -19,7 +19,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 /**
- * Abstract base class for converting from a type to a {@link java.lang.Enum}.
+ * Abstract base class for converting from a type to an {@link java.lang.Enum}.
  *
  * @param <T> the source type
  * @author Phillip Webb

@@ -5,7 +5,7 @@
 package org.springframework.boot.convert;
 
 /**
- * Converts from a String to a {@link java.lang.Enum} with lenient conversion rules.
+ * Converts from a String to an {@link java.lang.Enum} with lenient conversion rules.
  * Specifically:
  * <ul>
  * <li>Uses a case insensitive search</li>
