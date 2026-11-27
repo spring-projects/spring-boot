@@ -181,29 +181,24 @@ public class TomcatWebServerFactoryCustomizer
 		return value > 0;
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void customizeMaxThreads(ConfigurableTomcatWebServerFactory factory, int maxThreads) {
-		customizeHandler(factory, maxThreads, AbstractProtocol.class, AbstractProtocol::setMaxThreads);
+		customizeHandler(factory, maxThreads, AbstractProtocol.class, AbstractProtocol<?>::setMaxThreads);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void customizeMinThreads(ConfigurableTomcatWebServerFactory factory, int minSpareThreads) {
-		customizeHandler(factory, minSpareThreads, AbstractProtocol.class, AbstractProtocol::setMinSpareThreads);
+		customizeHandler(factory, minSpareThreads, AbstractProtocol.class, AbstractProtocol<?>::setMinSpareThreads);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void customizeMaxQueueCapacity(ConfigurableTomcatWebServerFactory factory, int maxQueueCapacity) {
-		customizeHandler(factory, maxQueueCapacity, AbstractProtocol.class, AbstractProtocol::setMaxQueueSize);
+		customizeHandler(factory, maxQueueCapacity, AbstractProtocol.class, AbstractProtocol<?>::setMaxQueueSize);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void customizeAcceptCount(ConfigurableTomcatWebServerFactory factory, int acceptCount) {
-		customizeHandler(factory, acceptCount, AbstractProtocol.class, AbstractProtocol::setAcceptCount);
+		customizeHandler(factory, acceptCount, AbstractProtocol.class, AbstractProtocol<?>::setAcceptCount);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void customizeProcessorCache(ConfigurableTomcatWebServerFactory factory, int processorCache) {
-		customizeHandler(factory, processorCache, AbstractProtocol.class, AbstractProtocol::setProcessorCache);
+		customizeHandler(factory, processorCache, AbstractProtocol.class, AbstractProtocol<?>::setProcessorCache);
 	}
 
 	private void customizeKeepAliveTimeout(ConfigurableTomcatWebServerFactory factory, Duration keepAliveTimeout) {
@@ -220,21 +215,18 @@ public class TomcatWebServerFactoryCustomizer
 		});
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void customizeMaxKeepAliveRequests(ConfigurableTomcatWebServerFactory factory, int maxKeepAliveRequests) {
 		customizeHandler(factory, maxKeepAliveRequests, AbstractHttp11Protocol.class,
-				AbstractHttp11Protocol::setMaxKeepAliveRequests);
+				AbstractHttp11Protocol<?>::setMaxKeepAliveRequests);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void customizeMaxConnections(ConfigurableTomcatWebServerFactory factory, int maxConnections) {
-		customizeHandler(factory, maxConnections, AbstractProtocol.class, AbstractProtocol::setMaxConnections);
+		customizeHandler(factory, maxConnections, AbstractProtocol.class, AbstractProtocol<?>::setMaxConnections);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void customizeConnectionTimeout(ConfigurableTomcatWebServerFactory factory, Duration connectionTimeout) {
 		customizeHandler(factory, (int) connectionTimeout.toMillis(), AbstractProtocol.class,
-				AbstractProtocol::setConnectionTimeout);
+				AbstractProtocol<?>::setConnectionTimeout);
 	}
 
 	private void customizeRelaxedPathChars(ConfigurableTomcatWebServerFactory factory, String relaxedChars) {
@@ -286,24 +278,21 @@ public class TomcatWebServerFactoryCustomizer
 		return this.serverProperties.getForwardHeadersStrategy() == ServerProperties.ForwardHeadersStrategy.NATIVE;
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void customizeMaxHttpRequestHeaderSize(ConfigurableTomcatWebServerFactory factory,
 			int maxHttpRequestHeaderSize) {
 		customizeHandler(factory, maxHttpRequestHeaderSize, AbstractHttp11Protocol.class,
-				AbstractHttp11Protocol::setMaxHttpRequestHeaderSize);
+				AbstractHttp11Protocol<?>::setMaxHttpRequestHeaderSize);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void customizeMaxHttpResponseHeaderSize(ConfigurableTomcatWebServerFactory factory,
 			int maxHttpResponseHeaderSize) {
 		customizeHandler(factory, maxHttpResponseHeaderSize, AbstractHttp11Protocol.class,
-				AbstractHttp11Protocol::setMaxHttpResponseHeaderSize);
+				AbstractHttp11Protocol<?>::setMaxHttpResponseHeaderSize);
 	}
 
-	@SuppressWarnings("rawtypes")
 	private void customizeMaxSwallowSize(ConfigurableTomcatWebServerFactory factory, int maxSwallowSize) {
 		customizeHandler(factory, maxSwallowSize, AbstractHttp11Protocol.class,
-				AbstractHttp11Protocol::setMaxSwallowSize);
+				AbstractHttp11Protocol<?>::setMaxSwallowSize);
 	}
 
 	private <T extends ProtocolHandler> void customizeHandler(ConfigurableTomcatWebServerFactory factory, int value,
