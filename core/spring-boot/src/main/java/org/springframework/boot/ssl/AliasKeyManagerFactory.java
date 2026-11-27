@@ -25,9 +25,9 @@ import javax.net.ssl.X509ExtendedKeyManager;
 /**
  * {@link KeyManagerFactory} that allows a configurable key alias to be used. Due to the
  * fact that the actual calls to retrieve the key by alias are done at request time the
- * approach is to wrap the actual key managers with an {@link AliasX509ExtendedKeyManager}.
- * The actual SPI has to be wrapped as well due to the fact that
- * {@link KeyManagerFactory#getKeyManagers()} is final.
+ * approach is to wrap the actual key managers with an
+ * {@link AliasX509ExtendedKeyManager}. The actual SPI has to be wrapped as well due to
+ * the fact that {@link KeyManagerFactory#getKeyManagers()} is final.
  *
  * @author Scott Frederick
  */
