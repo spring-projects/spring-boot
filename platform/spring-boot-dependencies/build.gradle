@@ -1967,7 +1967,7 @@ bom {
 			javadoc("https://javadoc.io/doc/org.messaginghub/pooled-jms/{version}", "org.messaginghub.pooled.jms")
 		}
 	}
-	library("Postgresql", "42.7.14") {
+	library("Postgresql", "42.7.15") {
 		group("org.postgresql") {
 			modules = [
 				"postgresql"
