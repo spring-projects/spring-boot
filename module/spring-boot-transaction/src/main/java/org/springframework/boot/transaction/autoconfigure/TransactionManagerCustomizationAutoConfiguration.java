@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.annotation.Order;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionExecutionListener;
 import org.springframework.transaction.TransactionManager;
@@ -18,6 +19,7 @@ import org.springframework.transaction.TransactionManager;
  * Auto-configuration for the customization of a {@link TransactionManager}.
  *
  * @author Andy Wilkinson
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @ConditionalOnClass(PlatformTransactionManager.class)
@@ -36,6 +38,13 @@ public final class TransactionManagerCustomizationAutoConfiguration {
 	ExecutionListenersTransactionManagerCustomizer transactionExecutionListeners(
 			ObjectProvider<TransactionExecutionListener> listeners) {
 		return new ExecutionListenersTransactionManagerCustomizer(listeners.orderedStream().toList());
+	}
+
+	@Order(0)
+	@Bean
+	TransactionPropertiesTransactionManagerCustomizer transactionPropertiesTransactionManagerCustomizer(
+			TransactionProperties properties) {
+		return new TransactionPropertiesTransactionManagerCustomizer(properties);
 	}
 
 }

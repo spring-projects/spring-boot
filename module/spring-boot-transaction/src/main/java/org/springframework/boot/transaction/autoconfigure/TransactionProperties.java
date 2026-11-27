@@ -19,10 +19,11 @@ import org.springframework.transaction.support.AbstractPlatformTransactionManage
  *
  * @author Kazuki Shimizu
  * @author Phillip Webb
+ * @author Yanming Zhou
  * @since 4.0.0
  */
 @ConfigurationProperties("spring.transaction")
-public class TransactionProperties implements TransactionManagerCustomizer<AbstractPlatformTransactionManager> {
+public class TransactionProperties {
 
 	/**
 	 * Default transaction timeout. If a duration suffix is not specified, seconds will be
@@ -50,16 +51,6 @@ public class TransactionProperties implements TransactionManagerCustomizer<Abstr
 
 	public void setRollbackOnCommitFailure(@Nullable Boolean rollbackOnCommitFailure) {
 		this.rollbackOnCommitFailure = rollbackOnCommitFailure;
-	}
-
-	@Override
-	public void customize(AbstractPlatformTransactionManager transactionManager) {
-		if (this.defaultTimeout != null) {
-			transactionManager.setDefaultTimeout((int) this.defaultTimeout.getSeconds());
-		}
-		if (this.rollbackOnCommitFailure != null) {
-			transactionManager.setRollbackOnCommitFailure(this.rollbackOnCommitFailure);
-		}
 	}
 
 }
