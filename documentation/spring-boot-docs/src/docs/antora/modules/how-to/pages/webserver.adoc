@@ -556,7 +556,7 @@ You can take complete control of the configuration of Tomcat's javadoc:org.apach
 [[howto.webserver.enable-multiple-connectors.tomcat]]
 === Multiple Connectors with Tomcat
 
-You can add an javadoc:org.apache.catalina.connector.Connector[] to the javadoc:org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory[], which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
+You can add a javadoc:org.apache.catalina.connector.Connector[] to the javadoc:org.springframework.boot.tomcat.servlet.TomcatServletWebServerFactory[], which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
 
 include-code::MyTomcatConfiguration[]
 
