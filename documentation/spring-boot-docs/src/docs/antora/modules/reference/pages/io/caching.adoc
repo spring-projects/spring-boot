@@ -107,7 +107,7 @@ There are two ways to customize the underlying javadoc:javax.cache.CacheManager[
 If a custom javadoc:javax.cache.configuration.Configuration[] bean is defined, it is used to customize them.
 * javadoc:org.springframework.boot.cache.autoconfigure.CacheManagerCustomizer[] beans are invoked with the reference of the javadoc:javax.cache.CacheManager[] for full customization.
 
-TIP: If a standard javadoc:javax.cache.CacheManager[] bean is defined, it is wrapped automatically in an javadoc:org.springframework.cache.CacheManager[] implementation that the abstraction expects.
+TIP: If a standard javadoc:javax.cache.CacheManager[] bean is defined, it is wrapped automatically in a javadoc:org.springframework.cache.CacheManager[] implementation that the abstraction expects.
 No further customization is applied to it.
 
 
