@@ -22,8 +22,8 @@ import org.springframework.lang.Contract;
 public interface OperationResponseBody {
 
 	/**
-	 * Return an {@link OperationResponseBody} {@link Map} instance containing entries from
-	 * the given {@code map}.
+	 * Return an {@link OperationResponseBody} {@link Map} instance containing entries
+	 * from the given {@code map}.
 	 * @param <K> the key type
 	 * @param <V> the value type
 	 * @param map the source map or {@code null}
