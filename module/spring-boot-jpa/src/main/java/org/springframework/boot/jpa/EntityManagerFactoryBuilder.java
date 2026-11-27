@@ -147,7 +147,7 @@ public class EntityManagerFactoryBuilder {
 	}
 
 	/**
-	 * Create a new {@link Builder} for a {@code EntityManagerFactory} using the settings
+	 * Create a new {@link Builder} for an {@code EntityManagerFactory} using the settings
 	 * of the given instance, and the given {@link DataSource}.
 	 * @param dataSource the data source to use
 	 * @return a builder to create an {@code EntityManagerFactory}

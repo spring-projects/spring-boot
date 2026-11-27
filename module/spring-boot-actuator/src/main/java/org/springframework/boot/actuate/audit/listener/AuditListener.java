@@ -12,7 +12,7 @@ import org.springframework.boot.actuate.audit.AuditEventRepository;
 
 /**
  * The default {@link AbstractAuditListener} implementation. Listens for
- * {@link AuditApplicationEvent}s and stores them in a {@link AuditEventRepository}.
+ * {@link AuditApplicationEvent}s and stores them in an {@link AuditEventRepository}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll

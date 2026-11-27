@@ -233,7 +233,7 @@ public class TestRestTemplate {
 
 	/**
 	 * Retrieve an entity by doing a GET on the specified URL. The response is converted
-	 * and stored in an {@link ResponseEntity}.
+	 * and stored in a {@link ResponseEntity}.
 	 * <p>
 	 * URI Template variables are expanded using the given URI variables, if any.
 	 * @param url the URL
@@ -250,7 +250,7 @@ public class TestRestTemplate {
 
 	/**
 	 * Retrieve a representation by doing a GET on the URI template. The response is
-	 * converted and stored in an {@link ResponseEntity}.
+	 * converted and stored in a {@link ResponseEntity}.
 	 * <p>
 	 * URI Template variables are expanded using the given map.
 	 * @param url the URL
@@ -266,7 +266,7 @@ public class TestRestTemplate {
 
 	/**
 	 * Retrieve a representation by doing a GET on the URL . The response is converted and
-	 * stored in an {@link ResponseEntity}.
+	 * stored in a {@link ResponseEntity}.
 	 * @param url the URL
 	 * @param responseType the type of the return value
 	 * @param <T> the type of the return value

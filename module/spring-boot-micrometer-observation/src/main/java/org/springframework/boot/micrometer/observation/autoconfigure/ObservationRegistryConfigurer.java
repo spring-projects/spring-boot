@@ -20,7 +20,7 @@ import org.springframework.boot.util.LambdaSafe;
  * {@link ObservationRegistry observation registries}. Installs
  * {@link ObservationPredicate observation predicates} and
  * {@link GlobalObservationConvention global observation conventions} into the
- * {@link ObservationRegistry}. Also uses a {@link ObservationHandlerGroups} to group
+ * {@link ObservationRegistry}. Also uses an {@link ObservationHandlerGroups} to group
  * handlers, which are then added to the {@link ObservationRegistry}.
  *
  * @author Moritz Halbritter

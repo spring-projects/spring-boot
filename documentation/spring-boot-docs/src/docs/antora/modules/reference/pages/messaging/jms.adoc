@@ -159,7 +159,7 @@ If a javadoc:org.springframework.jms.support.destination.DestinationResolver[] o
 
 When the JMS infrastructure is present, any bean can be annotated with javadoc:org.springframework.jms.annotation.JmsListener[format=annotation] to create a listener endpoint.
 If no javadoc:org.springframework.jms.config.JmsListenerContainerFactory[] has been defined, a default one is configured automatically.
-If a javadoc:org.springframework.jms.support.destination.DestinationResolver[], a javadoc:org.springframework.jms.support.converter.MessageConverter[], or a javadoc:jakarta.jms.ExceptionListener[] beans are defined, they are associated automatically with the default factory.
+If a javadoc:org.springframework.jms.support.destination.DestinationResolver[], a javadoc:org.springframework.jms.support.converter.MessageConverter[], or an javadoc:jakarta.jms.ExceptionListener[] beans are defined, they are associated automatically with the default factory.
 
 In most scenarios, message listener containers should be configured against the native javadoc:jakarta.jms.ConnectionFactory[].
 This way each listener container has its own connection and this gives full responsibility to it in terms of local recovery.

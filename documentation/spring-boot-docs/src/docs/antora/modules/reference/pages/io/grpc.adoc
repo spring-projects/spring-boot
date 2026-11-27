@@ -449,7 +449,7 @@ Spring gRPC includes features that allow you to secure your Netty based server a
 This follows similar patterns to those you would use to secure a regular web application.
 
 Spring Boot provides auto-configuration for both javadoc:org.springframework.grpc.server.security.GrpcSecurity[] and javadoc:org.springframework.grpc.server.security.SecurityGrpcExceptionHandler[] beans.
-Typically, gRPC applications are then secured using javadoc:org.springframework.security.access.prepost.PreAuthorize[format=annotation] annotations on your gRPC service beans, or a javadoc:org.springframework.grpc.server.security.AuthenticationProcessInterceptor[] bean.
+Typically, gRPC applications are then secured using javadoc:org.springframework.security.access.prepost.PreAuthorize[format=annotation] annotations on your gRPC service beans, or an javadoc:org.springframework.grpc.server.security.AuthenticationProcessInterceptor[] bean.
 
 For more details, please see {url-spring-grpc-docs}/server.html#_declarative_security_with_spring_security[the Spring gRPC documentation].
 

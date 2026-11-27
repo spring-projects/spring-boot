@@ -74,7 +74,7 @@ public final class BindResult<T> {
 	 * @param <U> the type of the result of the mapping function
 	 * @param mapper a mapping function to apply to the bound value. The mapper will not
 	 * be invoked if no value has been bound.
-	 * @return an {@code BindResult} describing the result of applying a mapping function
+	 * @return a {@code BindResult} describing the result of applying a mapping function
 	 * to the value of this {@code BindResult}.
 	 */
 	public <U> BindResult<U> map(Function<? super T, ? extends U> mapper) {
