@@ -454,7 +454,7 @@ public class SpringBootContextLoader extends AbstractContextLoader implements Ao
 	}
 
 	/**
-	 * Adapts a {@link ContextCustomizer} to a {@link ApplicationContextInitializer} so
+	 * Adapts a {@link ContextCustomizer} to an {@link ApplicationContextInitializer} so
 	 * that it can be triggered through {@link SpringApplication}.
 	 */
 	private static class ContextCustomizerAdapter

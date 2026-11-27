@@ -51,7 +51,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * A {@link WebApplicationContext} that can be used to bootstrap itself from a contained
  * {@link ServletWebServerFactory} bean.
  * <p>
- * This context will create, initialize and run an {@link WebServer} by searching for a
+ * This context will create, initialize and run a {@link WebServer} by searching for a
  * single {@link ServletWebServerFactory} bean within the {@link ApplicationContext}
  * itself. The {@link ServletWebServerFactory} is free to use standard Spring concepts
  * (such as dependency injection, lifecycle callbacks and property placeholder variables).

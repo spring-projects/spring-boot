@@ -19,7 +19,7 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link EndpointObjectNameFactory} that generates standard {@link ObjectName} for
+ * An {@link EndpointObjectNameFactory} that generates standard {@link ObjectName} for
  * Actuator's endpoints.
  *
  * @author Stephane Nicoll

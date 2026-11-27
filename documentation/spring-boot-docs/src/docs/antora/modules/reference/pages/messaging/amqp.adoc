@@ -56,7 +56,7 @@ spring:
       completion-timeout: "500ms"
 ----
 
-To further configure the auto-configured javadoc:org.springframework.amqp.client.AmqpClient[], define a javadoc:org.springframework.boot.amqp.autoconfigure.AmqpClientCustomizer[] bean.
+To further configure the auto-configured javadoc:org.springframework.amqp.client.AmqpClient[], define an javadoc:org.springframework.boot.amqp.autoconfigure.AmqpClientCustomizer[] bean.
 
 
 
@@ -65,7 +65,7 @@ To further configure the auto-configured javadoc:org.springframework.amqp.client
 
 When the generic AMQP 1.0 infrastructure is present, any bean can be annotated with javadoc:org.springframework.amqp.client.annotation.AmqpListener[format=annotation] to create a listener endpoint.
 If no javadoc:org.springframework.amqp.client.config.MethodAmqpMessageListenerContainerFactory[] has been defined, a default one is automatically configured.
-If a javadoc:org.springframework.amqp.support.converter.MessageConverter[] or a javadoc:org.springframework.amqp.client.listener.AmqpListenerErrorHandler[] bean is defined, it is automatically associated with the default factory.
+If a javadoc:org.springframework.amqp.support.converter.MessageConverter[] or an javadoc:org.springframework.amqp.client.listener.AmqpListenerErrorHandler[] bean is defined, it is automatically associated with the default factory.
 
 The following sample component creates a listener endpoint on the `/queues/someQueue` address:
 
@@ -73,7 +73,7 @@ include-code::MyBean[]
 
 TIP: See javadoc:org.springframework.amqp.client.config.EnableAmqp[format=annotation] for more details.
 
-If you need to create more javadoc:org.springframework.amqp.client.config.MethodAmqpMessageListenerContainerFactory[] instances or if you want to override the default, Spring Boot provides a javadoc:org.springframework.boot.amqp.autoconfigure.AmqpMessageListenerContainerFactoryConfigurer[] that you can use to initialize a javadoc:org.springframework.amqp.client.config.MethodAmqpMessageListenerContainerFactory[] with the same settings as the factory used by the auto-configuration.
+If you need to create more javadoc:org.springframework.amqp.client.config.MethodAmqpMessageListenerContainerFactory[] instances or if you want to override the default, Spring Boot provides an javadoc:org.springframework.boot.amqp.autoconfigure.AmqpMessageListenerContainerFactoryConfigurer[] that you can use to initialize a javadoc:org.springframework.amqp.client.config.MethodAmqpMessageListenerContainerFactory[] with the same settings as the factory used by the auto-configuration.
 
 For instance, the following configuration class exposes another factory that uses a specific javadoc:org.springframework.amqp.support.converter.MessageConverter[]:
 
@@ -117,7 +117,7 @@ NOTE: When specifying an address that way, the `host` and `port` properties are 
 If the address uses the `amqps` scheme, an xref:features/ssl.adoc#features.ssl.bundles[SSL bundle] must be configured.
 
 See javadoc:org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpRabbitProperties[] for more of the supported property-based configuration options.
-To configure lower-level details of the auto-configured javadoc:com.rabbitmq.client.amqp.Environment[], define a javadoc:org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpEnvironmentCustomizer[] bean.
+To configure lower-level details of the auto-configured javadoc:com.rabbitmq.client.amqp.Environment[], define an javadoc:org.springframework.boot.amqp.rabbitmq.autoconfigure.AmqpEnvironmentCustomizer[] bean.
 
 If a javadoc:com.rabbitmq.client.amqp.CredentialsProvider[] bean exists in the context, it will be automatically used by the auto-configured javadoc:com.rabbitmq.client.amqp.Environment[].
 

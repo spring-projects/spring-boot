@@ -34,7 +34,7 @@ class ArtemisDockerComposeConnectionDetailsFactory
 	}
 
 	/**
-	 * {@link ArtemisConnectionDetails} backed by a {@code artemis}
+	 * {@link ArtemisConnectionDetails} backed by an {@code artemis}
 	 * {@link RunningService}.
 	 */
 	static class ArtemisDockerComposeConnectionDetails extends DockerComposeConnectionDetails

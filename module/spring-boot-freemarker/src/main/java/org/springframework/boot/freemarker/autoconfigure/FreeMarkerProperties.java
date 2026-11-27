@@ -264,7 +264,7 @@ public class FreeMarkerProperties {
 	}
 
 	/**
-	 * Apply the given properties to a {@link AbstractTemplateViewResolver}. Use Object in
+	 * Apply the given properties to an {@link AbstractTemplateViewResolver}. Use Object in
 	 * signature to avoid runtime dependency on MVC, which means that the template engine
 	 * can be used in a non-web application.
 	 * @param viewResolver the resolver to apply the properties to.

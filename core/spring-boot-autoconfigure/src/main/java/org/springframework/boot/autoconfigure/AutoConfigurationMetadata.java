@@ -63,7 +63,7 @@ public interface AutoConfigurationMetadata {
 	@Nullable Set<String> getSet(String className, String key, @Nullable Set<String> defaultValue);
 
 	/**
-	 * Get an {@link String} value from the meta-data.
+	 * Get a {@link String} value from the meta-data.
 	 * @param className the source class
 	 * @param key the meta-data key
 	 * @return the meta-data value or {@code null}
@@ -71,7 +71,7 @@ public interface AutoConfigurationMetadata {
 	@Nullable String get(String className, String key);
 
 	/**
-	 * Get an {@link String} value from the meta-data.
+	 * Get a {@link String} value from the meta-data.
 	 * @param className the source class
 	 * @param key the meta-data key
 	 * @param defaultValue the default value

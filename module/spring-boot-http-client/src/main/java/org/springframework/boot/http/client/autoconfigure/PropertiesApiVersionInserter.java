@@ -44,7 +44,7 @@ public final class PropertiesApiVersionInserter implements ApiVersionInserter {
 	 * Factory method to get a new {@link PropertiesApiVersionInserter} for the given
 	 * properties.
 	 * @param properties the API version properties
-	 * @return an {@link PropertiesApiVersionInserter} configured from the properties
+	 * @return a {@link PropertiesApiVersionInserter} configured from the properties
 	 */
 	public static PropertiesApiVersionInserter get(ApiversionProperties.Insert properties) {
 		Builder builder = builder(properties);

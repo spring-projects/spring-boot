@@ -43,7 +43,7 @@ import org.springframework.boot.loader.tools.Packager;
 import org.springframework.boot.loader.tools.layer.CustomLayers;
 
 /**
- * Abstract base class for classes that work with an {@link Packager}.
+ * Abstract base class for classes that work with a {@link Packager}.
  *
  * @author Phillip Webb
  * @author Scott Frederick

@@ -24,7 +24,7 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link ApplicationListener} that listens for an {@link DockerComposeServicesReadyEvent}
+ * {@link ApplicationListener} that listens for a {@link DockerComposeServicesReadyEvent}
  * in order to establish service connections.
  *
  * @author Moritz Halbritter

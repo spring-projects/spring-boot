@@ -14,7 +14,7 @@ import org.springframework.boot.docker.compose.service.connection.DockerComposeC
 
 /**
  * {@link DockerComposeConnectionDetailsFactory} to create {@link AmqpConnectionDetails}
- * for a {@code artemis} service.
+ * for an {@code artemis} service.
  *
  * @author Stephane Nicoll
  */

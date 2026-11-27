@@ -13,7 +13,7 @@ import org.springframework.security.web.servlet.util.matcher.PathPatternRequestM
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
- * {@link RequestMatcherProvider} that provides an {@link PathPatternRequestMatcher}.
+ * {@link RequestMatcherProvider} that provides a {@link PathPatternRequestMatcher}.
  *
  * @author Madhura Bhave
  * @author Chris Bono

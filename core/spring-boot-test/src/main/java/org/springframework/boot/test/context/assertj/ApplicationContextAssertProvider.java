@@ -92,7 +92,7 @@ public interface ApplicationContextAssertProvider<SELF extends ApplicationContex
 	 * interface)
 	 * @param contextSupplier a supplier that will either return a fully configured
 	 * {@link ApplicationContext} or throw an exception if the context fails to start.
-	 * @return a {@link ApplicationContextAssertProvider} instance
+	 * @return an {@link ApplicationContextAssertProvider} instance
 	 */
 	static <T extends ApplicationContextAssertProvider<? super T, C>, C extends ApplicationContext> T get(Class<T> type,
 			Class<? extends C> contextType, Supplier<? extends C> contextSupplier) {
@@ -111,7 +111,7 @@ public interface ApplicationContextAssertProvider<SELF extends ApplicationContex
 	 * {@link ApplicationContext} or throw an exception if the context fails to start.
 	 * @param additionalContextInterfaces and additional context interfaces to add to the
 	 * proxy
-	 * @return a {@link ApplicationContextAssertProvider} instance
+	 * @return an {@link ApplicationContextAssertProvider} instance
 	 * @since 3.4.0
 	 */
 	@SuppressWarnings("unchecked")
