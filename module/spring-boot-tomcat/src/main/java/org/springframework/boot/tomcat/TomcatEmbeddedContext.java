@@ -39,6 +39,10 @@ public class TomcatEmbeddedContext extends StandardContext {
 
 	private @Nullable MimeMappings mimeMappings;
 
+	public TomcatEmbeddedContext() {
+		setJarScanner(new TomcatJarScanner());
+	}
+
 	@Override
 	public boolean loadOnStartup(Container[] children) {
 		// deferred until later (see deferredLoadOnStartup)
