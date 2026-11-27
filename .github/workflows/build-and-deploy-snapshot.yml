@@ -28,7 +28,7 @@ jobs:
           gradle-cache-read-only: false
           publish: true
       - name: Deploy
-        uses: spring-io/artifactory-deploy-action@9cb1c7df78cd8d1223de1dde974819fa6378af9f # v0.0.6
+        uses: spring-io/artifactory-deploy-action@860632611280011966e3f460520dca3733bd9a93 # v0.0.8
         with:
           build-name: ${{ vars.COMMERCIAL && format('spring-boot-commercial-{0}', '4.2.x') || format('spring-boot-{0}', '4.2.x') }}
           folder: 'deployment-repository'
