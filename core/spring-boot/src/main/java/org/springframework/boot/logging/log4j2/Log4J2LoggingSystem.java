@@ -549,7 +549,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	/**
 	 * Isolates the optional JUL bridge dependency.
 	 */
-	private static class BridgeHandlerInstaller {
+	private static final class BridgeHandlerInstaller {
 
 		static Runnable install() {
 			java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");

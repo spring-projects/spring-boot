@@ -504,7 +504,7 @@ public class LogbackLoggingSystem extends AbstractLoggingSystem implements BeanF
 	/**
 	 * Isolates the optional JUL bridge dependency.
 	 */
-	private static class BridgeHandlerInstaller {
+	private static final class BridgeHandlerInstaller {
 
 		static Runnable install() {
 			java.util.logging.Logger rootLogger = LogManager.getLogManager().getLogger("");
