@@ -16,7 +16,7 @@ import java.util.concurrent.Executor;
 public interface GrpcServerExecutorProvider {
 
 	/**
-	 * Returns a {@link Executor} for the gRPC server, if it needs to be customized.
+	 * Returns an {@link Executor} for the gRPC server, if it needs to be customized.
 	 * @return the executor to use for the gRPC server
 	 */
 	Executor getExecutor();

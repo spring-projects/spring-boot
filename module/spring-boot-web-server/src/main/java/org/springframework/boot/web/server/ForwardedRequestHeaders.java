@@ -36,7 +36,7 @@ public record ForwardedRequestHeaders(Naming naming, boolean usePrefix) {
 	public enum Naming {
 
 		/**
-		 * Named using the de facto 'X-FOWARDED-*' standard.
+		 * Named using the de facto 'X-FORWARDED-*' standard.
 		 */
 		X_FORWARDED,
 

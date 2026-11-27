@@ -40,7 +40,7 @@ public interface StatusMapper {
 	}
 
 	/**
-	 * Return an {@link StatusMapper} instance using default mappings.
+	 * Return a {@link StatusMapper} instance using default mappings.
 	 * @return a mapper using default mappings
 	 */
 	static StatusMapper getDefault() {

@@ -23,7 +23,7 @@ spring:
 If `spring-integration-rsocket` is available, developers can configure an RSocket server using `spring.rsocket.server.*` properties and let it use javadoc:org.springframework.integration.rsocket.IntegrationRSocketEndpoint[] or javadoc:org.springframework.integration.rsocket.outbound.RSocketOutboundGateway[] components to handle incoming RSocket messages.
 This infrastructure can handle Spring Integration RSocket channel adapters and javadoc:org.springframework.messaging.handler.annotation.MessageMapping[format=annotation] handlers (given `spring.integration.rsocket.server.message-mapping-enabled` is configured).
 
-Spring Boot can also auto-configure an javadoc:org.springframework.integration.rsocket.ClientRSocketConnector[] using configuration properties:
+Spring Boot can also auto-configure a javadoc:org.springframework.integration.rsocket.ClientRSocketConnector[] using configuration properties:
 
 [configprops,yaml]
 ----

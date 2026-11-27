@@ -17,7 +17,7 @@ import org.springframework.util.Assert;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
- * Configures an {@link ReactiveOpaqueTokenIntrospector} when a token introspection
+ * Configures a {@link ReactiveOpaqueTokenIntrospector} when a token introspection
  * endpoint is available.
  *
  * @author Madhura Bhave

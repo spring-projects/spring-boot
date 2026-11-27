@@ -15,7 +15,7 @@ import org.apache.hc.client5.http.DnsResolver;
 import org.springframework.util.ObjectUtils;
 
 /**
- * HTTP Components {@link DnsResolver} that filters using a {@link InetAddressFilter}.
+ * HTTP Components {@link DnsResolver} that filters using an {@link InetAddressFilter}.
  *
  * @author Phillip Webb
  */
