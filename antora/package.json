@@ -3,7 +3,7 @@
     "antora": "node npm/antora.js"
   },
   "dependencies": {
-    "@antora/cli": "3.2.2",
+    "@antora/cli": "3.2.3",
     "@antora/logger": "3.2.2",
     "@antora/site-generator": "3.2.2",
     "@antora/atlas-extension": "1.0.0-alpha.6",
