@@ -58,7 +58,7 @@ public class Manifest extends MappedObject {
 	}
 
 	/**
-	 * Create an {@link Manifest} from the provided JSON input stream.
+	 * Create a {@link Manifest} from the provided JSON input stream.
 	 * @param content the JSON input stream
 	 * @return a new {@link Manifest} instance
 	 * @throws IOException on IO error

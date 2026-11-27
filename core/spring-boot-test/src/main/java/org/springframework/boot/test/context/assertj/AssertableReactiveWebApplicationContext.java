@@ -31,7 +31,7 @@ public interface AssertableReactiveWebApplicationContext
 	 * @param contextSupplier a supplier that will either return a fully configured
 	 * {@link ConfigurableReactiveWebApplicationContext} or throw an exception if the
 	 * context fails to start.
-	 * @return a {@link AssertableReactiveWebApplicationContext} instance
+	 * @return an {@link AssertableReactiveWebApplicationContext} instance
 	 */
 	static AssertableReactiveWebApplicationContext get(
 			Supplier<? extends ConfigurableReactiveWebApplicationContext> contextSupplier) {
@@ -47,7 +47,7 @@ public interface AssertableReactiveWebApplicationContext
 	 * context fails to start.
 	 * @param additionalContextInterfaces and additional context interfaces to add to the
 	 * proxy
-	 * @return a {@link AssertableReactiveWebApplicationContext} instance
+	 * @return an {@link AssertableReactiveWebApplicationContext} instance
 	 * @since 3.4.0
 	 */
 	static AssertableReactiveWebApplicationContext get(

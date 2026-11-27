@@ -12,7 +12,7 @@ import javax.lang.model.element.TypeElement;
 import org.springframework.boot.configurationprocessor.fieldvalues.javac.JavaCompilerFieldValuesParser;
 
 /**
- * Parser which can be used to obtain the field values from an {@link TypeElement}.
+ * Parser which can be used to obtain the field values from a {@link TypeElement}.
  *
  * @author Phillip Webb
  * @since 1.1.2

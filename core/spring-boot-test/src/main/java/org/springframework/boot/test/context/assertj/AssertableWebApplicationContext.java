@@ -30,7 +30,7 @@ public interface AssertableWebApplicationContext
 	 * @param contextSupplier a supplier that will either return a fully configured
 	 * {@link ConfigurableWebApplicationContext} or throw an exception if the context
 	 * fails to start.
-	 * @return a {@link AssertableWebApplicationContext} instance
+	 * @return an {@link AssertableWebApplicationContext} instance
 	 */
 	static AssertableWebApplicationContext get(Supplier<? extends ConfigurableWebApplicationContext> contextSupplier) {
 		return ApplicationContextAssertProvider.get(AssertableWebApplicationContext.class,
@@ -44,7 +44,7 @@ public interface AssertableWebApplicationContext
 	 * fails to start.
 	 * @param additionalContextInterfaces and additional context interfaces to add to the
 	 * proxy
-	 * @return a {@link AssertableWebApplicationContext} instance
+	 * @return an {@link AssertableWebApplicationContext} instance
 	 * @since 3.4.0
 	 */
 	static AssertableWebApplicationContext get(Supplier<? extends ConfigurableWebApplicationContext> contextSupplier,

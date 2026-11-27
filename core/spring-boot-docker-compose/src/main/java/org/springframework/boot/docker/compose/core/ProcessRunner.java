@@ -55,7 +55,7 @@ class ProcessRunner {
 
 	/**
 	 * Runs the given {@code command}. If the process exits with an error code other than
-	 * zero, an {@link ProcessExitException} will be thrown.
+	 * zero, a {@link ProcessExitException} will be thrown.
 	 * @param command the command to run
 	 * @return the output of the command
 	 * @throws ProcessExitException if execution failed
@@ -66,7 +66,7 @@ class ProcessRunner {
 
 	/**
 	 * Runs the given {@code command}. If the process exits with an error code other than
-	 * zero, an {@link ProcessExitException} will be thrown.
+	 * zero, a {@link ProcessExitException} will be thrown.
 	 * @param outputConsumer consumer used to accept output one line at a time
 	 * @param command the command to run
 	 * @return the output of the command

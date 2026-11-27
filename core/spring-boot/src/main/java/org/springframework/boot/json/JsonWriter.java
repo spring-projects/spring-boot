@@ -434,7 +434,7 @@ public interface JsonWriter<T> {
 		/**
 		 * Adapt the value by applying the given {@link Function}.
 		 * @param <R> the result type
-		 * @param extractor a {@link Extractor} to adapt the value
+		 * @param extractor an {@link Extractor} to adapt the value
 		 * @return a {@link Member} which may be configured further
 		 */
 		@SuppressWarnings("unchecked")
@@ -447,7 +447,7 @@ public interface JsonWriter<T> {
 
 		/**
 		 * Add JSON name/value pairs by extracting values from a series of elements.
-		 * Typically used with a {@link Iterable#forEach(Consumer)} call, for example:
+		 * Typically used with an {@link Iterable#forEach(Consumer)} call, for example:
 		 *
 		 * <pre class="code">
 		 * members.add(Event::getTags).usingExtractedPairs(Iterable::forEach, pairExtractor);
@@ -489,7 +489,7 @@ public interface JsonWriter<T> {
 
 		/**
 		 * Add JSON name/value pairs by extracting values from a series of elements.
-		 * Typically used with a {@link Iterable#forEach(Consumer)} call, for example:
+		 * Typically used with an {@link Iterable#forEach(Consumer)} call, for example:
 		 *
 		 * <pre class="code">
 		 * members.add(Event::getTags).usingExtractedPairs(Iterable::forEach, Tag::getName, Tag::getValue);

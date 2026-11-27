@@ -63,7 +63,7 @@ public class ManifestList extends MappedObject {
 	}
 
 	/**
-	 * Create an {@link ManifestList} from the provided JSON input stream.
+	 * Create a {@link ManifestList} from the provided JSON input stream.
 	 * @param content the JSON input stream
 	 * @return a new {@link ManifestList} instance
 	 * @throws IOException on IO error

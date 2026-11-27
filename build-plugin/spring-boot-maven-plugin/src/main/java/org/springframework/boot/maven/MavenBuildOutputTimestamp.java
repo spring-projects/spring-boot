@@ -43,8 +43,8 @@ class MavenBuildOutputTimestamp {
 	}
 
 	/**
-	 * Returns the parsed timestamp as an {@code FileTime}.
-	 * @return the parsed timestamp as an {@code FileTime}, or {@code null}
+	 * Returns the parsed timestamp as a {@code FileTime}.
+	 * @return the parsed timestamp as a {@code FileTime}, or {@code null}
 	 * @throws IllegalArgumentException if the outputTimestamp is neither ISO 8601 nor an
 	 * integer, or it's not within the valid range 1980-01-01T00:00:02Z to
 	 * 2099-12-31T23:59:59Z

@@ -10,7 +10,7 @@ import java.util.stream.Stream;
 import org.springframework.util.CollectionUtils;
 
 /**
- * A {@link IterableConfigurationPropertySource} supporting name aliases.
+ * An {@link IterableConfigurationPropertySource} supporting name aliases.
  *
  * @author Phillip Webb
  * @author Madhura Bhave

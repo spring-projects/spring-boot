@@ -309,7 +309,7 @@ TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NON
 [[features.spring-application.application-arguments]]
 == Accessing Application Arguments
 
-If you need to access the application arguments that were passed to `SpringApplication.run(...)`, you can inject a javadoc:org.springframework.boot.ApplicationArguments[] bean.
+If you need to access the application arguments that were passed to `SpringApplication.run(...)`, you can inject an javadoc:org.springframework.boot.ApplicationArguments[] bean.
 The javadoc:org.springframework.boot.ApplicationArguments[] interface provides access to both the raw `String[]` arguments as well as parsed `option` and `non-option` arguments, as shown in the following example:
 
 include-code::MyBean[]

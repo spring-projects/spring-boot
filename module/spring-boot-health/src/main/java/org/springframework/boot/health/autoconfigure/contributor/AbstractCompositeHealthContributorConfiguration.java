@@ -26,7 +26,7 @@ abstract class AbstractCompositeHealthContributorConfiguration<C, I extends C, B
 	private final Function<B, I> indicatorFactory;
 
 	/**
-	 * Creates a {@code AbstractCompositeHealthContributorConfiguration} that will use the
+	 * Creates an {@code AbstractCompositeHealthContributorConfiguration} that will use the
 	 * given {@code indicatorFactory} to create health indicator instances.
 	 * @param indicatorFactory the function to create health indicators
 	 */

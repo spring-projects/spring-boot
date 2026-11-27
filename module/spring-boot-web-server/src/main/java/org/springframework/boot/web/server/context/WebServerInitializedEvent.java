@@ -39,7 +39,7 @@ public abstract class WebServerInitializedEvent extends ApplicationEvent {
 	public abstract WebServerApplicationContext getApplicationContext();
 
 	/**
-	 * Access the source of the event (an {@link WebServer}).
+	 * Access the source of the event (a {@link WebServer}).
 	 * @return the embedded web server
 	 */
 	@Override
