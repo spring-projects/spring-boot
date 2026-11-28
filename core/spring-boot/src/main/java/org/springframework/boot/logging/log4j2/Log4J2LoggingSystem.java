@@ -65,6 +65,7 @@ import org.springframework.util.StringUtils;
  * @author Ralph Goers
  * @author Piotr P. Karwasz
  * @author Dhruv Rastogi
+ * @author Rameel Rizvi
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends AbstractLoggingSystem {
@@ -108,6 +109,8 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	private final LoggerContext loggerContext;
 
 	private boolean bridgeHandlerInstalled;
+
+	private boolean rootConsoleHandlerRemoved;
 
 	/**
 	 * Create a new {@link Log4J2LoggingSystem} instance.
@@ -206,7 +209,6 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 	}
 
 	private void removeLog4jBridgeHandler() {
-		removeDefaultRootHandler();
 		java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
 		for (final Handler handler : rootLogger.getHandlers()) {
 			if (handler instanceof Log4jBridgeHandler) {
@@ -214,6 +216,11 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 				rootLogger.removeHandler(handler);
 			}
 		}
+		// Restore the default JUL root handler that was removed when the bridge
+		// was installed. Without this, anything logged through JUL after cleanup
+		// (for example a startup failure reported via a JUL-backed commons-logging
+		// Log) would be silently discarded (see gh-50404).
+		restoreDefaultRootHandler();
 	}
 
 	private void removeDefaultRootHandler() {
@@ -222,6 +229,23 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			Handler[] handlers = rootLogger.getHandlers();
 			if (handlers.length == 1 && handlers[0] instanceof ConsoleHandler) {
 				rootLogger.removeHandler(handlers[0]);
+				this.rootConsoleHandlerRemoved = true;
+			}
+		}
+		catch (Throwable ex) {
+			// Ignore and continue
+		}
+	}
+
+	private void restoreDefaultRootHandler() {
+		if (!this.rootConsoleHandlerRemoved) {
+			return;
+		}
+		this.rootConsoleHandlerRemoved = false;
+		try {
+			java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
+			if (rootLogger.getHandlers().length == 0) {
+				rootLogger.addHandler(new ConsoleHandler());
 			}
 		}
 		catch (Throwable ex) {
