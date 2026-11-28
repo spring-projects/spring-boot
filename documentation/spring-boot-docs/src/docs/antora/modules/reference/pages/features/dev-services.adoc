@@ -107,6 +107,9 @@ The following service connections are currently supported:
 | javadoc:org.springframework.boot.ldap.autoconfigure.LdapConnectionDetails[]
 | Containers named "osixia/openldap", "lldap/lldap"
 
+| javadoc:org.springframework.boot.mail.autoconfigure.MailConnectionDetails[]
+| Containers named "axllent/mailpit"
+
 | javadoc:org.springframework.boot.mongodb.autoconfigure.MongoConnectionDetails[]
 | Containers named "mongo"
 

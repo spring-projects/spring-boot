@@ -19,6 +19,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jndi.JndiPropertiesHidingClassLoader;
 import org.springframework.boot.autoconfigure.jndi.TestableInitialContextFactory;
 import org.springframework.boot.autoconfigure.ssl.SslAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.resources.WithPackageResources;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.never;
  *
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Van Vo
  */
 class MailSenderAutoConfigurationTests {
 
@@ -117,6 +119,89 @@ class MailSenderAutoConfigurationTests {
 	}
 
 	@Test
+	void connectionDetailsWithoutHostProperty() {
+		this.contextRunner.withUserConfiguration(MailConnectionDetailsConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(JavaMailSenderImpl.class).hasSingleBean(MailConnectionDetails.class);
+			JavaMailSenderImpl sender = context.getBean(JavaMailSenderImpl.class);
+			assertThat(sender.getHost()).isEqualTo("mail.example.com");
+			assertThat(sender.getPort()).isEqualTo(1025);
+			assertThat(sender.getUsername()).isEqualTo("user");
+			assertThat(sender.getPassword()).isEqualTo("password");
+		});
+	}
+
+	@Test
+	void connectionDetailsTakePrecedenceOverProperties() {
+		this.contextRunner.withUserConfiguration(MailConnectionDetailsConfiguration.class)
+			.withPropertyValues("spring.mail.host:other.example.com", "spring.mail.port:25",
+					"spring.mail.username:other-user", "spring.mail.password:other-password",
+					"spring.mail.protocol:smtps", "spring.mail.default-encoding:US-ASCII",
+					"spring.mail.ssl.enabled:true", "spring.mail.properties.mail.smtps.timeout:1000")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(MailConnectionDetails.class);
+				JavaMailSenderImpl sender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(sender.getHost()).isEqualTo("mail.example.com");
+				assertThat(sender.getPort()).isEqualTo(1025);
+				assertThat(sender.getUsername()).isEqualTo("user");
+				assertThat(sender.getPassword()).isEqualTo("password");
+				assertThat(sender.getProtocol()).isEqualTo("smtps");
+				assertThat(sender.getDefaultEncoding()).isEqualTo("US-ASCII");
+				assertThat(sender.getJavaMailProperties()).containsEntry("mail.smtps.timeout", "1000")
+					.containsEntry("mail.smtps.ssl.enable", "true");
+			});
+	}
+
+	@Test
+	void connectionDetailsWithoutCredentialsTakePrecedenceOverProperties() {
+		this.contextRunner.withBean(MailConnectionDetails.class, () -> new MailConnectionDetails() {
+
+			@Override
+			public String getHost() {
+				return "mail.example.com";
+			}
+
+			@Override
+			public int getPort() {
+				return 1025;
+			}
+
+		})
+			.withPropertyValues("spring.mail.username:other-user", "spring.mail.password:other-password")
+			.run((context) -> {
+				JavaMailSenderImpl sender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(sender.getUsername()).isNull();
+				assertThat(sender.getPassword()).isNull();
+			});
+	}
+
+	@Test
+	void mailSenderBacksOffWithConnectionDetails() {
+		this.contextRunner
+			.withUserConfiguration(ManualMailConfiguration.class, MailConnectionDetailsConfiguration.class)
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSender.class);
+				JavaMailSenderImpl sender = context.getBean(JavaMailSenderImpl.class);
+				assertThat(sender.getHost()).isNull();
+				assertThat(sender.getPort()).isEqualTo(JavaMailSenderImpl.DEFAULT_PORT);
+			});
+	}
+
+	@Test
+	void smtpHostWithoutTestcontainers() {
+		this.contextRunner
+			.withClassLoader(new FilteredClassLoader("org.testcontainers", "org.springframework.boot.testcontainers"))
+			.withPropertyValues("spring.mail.host:mail.example.com")
+			.run((context) -> assertThat(context).hasSingleBean(JavaMailSender.class));
+	}
+
+	@Test
+	void smtpsUsesProtocolDefaultPort() {
+		this.contextRunner.withPropertyValues("spring.mail.host:mail.example.com", "spring.mail.protocol:smtps")
+			.run((context) -> assertThat(context.getBean(JavaMailSenderImpl.class).getPort())
+				.isEqualTo(JavaMailSenderImpl.DEFAULT_PORT));
+	}
+
+	@Test
 	void mailSenderBackOff() {
 		this.contextRunner.withUserConfiguration(ManualMailConfiguration.class)
 			.withPropertyValues("spring.mail.host:smtp.acme.org", "spring.mail.username:user",
@@ -188,6 +273,26 @@ class MailSenderAutoConfigurationTests {
 				assertThat(sessionBean).isEqualTo(session);
 				assertThat(context.getBean(JavaMailSenderImpl.class).getSession()).isEqualTo(sessionBean);
 			});
+	}
+
+	@Test
+	void jndiSessionTakesPrecedenceOverConnectionDetails() {
+		Session session = configureJndiSession("foo");
+		this.contextRunner.withUserConfiguration(MailConnectionDetailsConfiguration.class)
+			.withPropertyValues("spring.mail.jndi-name:foo")
+			.run((context) -> {
+				assertThat(context).hasSingleBean(JavaMailSenderImpl.class);
+				assertThat(context.getBean(JavaMailSenderImpl.class).getSession()).isSameAs(session);
+				assertThat(context.getBean(JavaMailSenderImpl.class).getHost()).isNull();
+			});
+	}
+
+	@Test
+	void jndiNameWithoutJndiEnvironmentDoesNotCreateMailSender() {
+		this.contextRunner.withSystemProperties(Context.INITIAL_CONTEXT_FACTORY + "=")
+			.withPropertyValues("spring.mail.jndi-name:foo")
+			.run((context) -> assertThat(context).doesNotHaveBean(MailSender.class)
+				.doesNotHaveBean(MailConnectionDetails.class));
 	}
 
 	@Test
@@ -384,6 +489,38 @@ class MailSenderAutoConfigurationTests {
 		Session session = Session.getDefaultInstance(properties);
 		TestableInitialContextFactory.bind(name, session);
 		return session;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MailConnectionDetailsConfiguration {
+
+		@Bean
+		MailConnectionDetails mailConnectionDetails() {
+			return new MailConnectionDetails() {
+
+				@Override
+				public String getHost() {
+					return "mail.example.com";
+				}
+
+				@Override
+				public int getPort() {
+					return 1025;
+				}
+
+				@Override
+				public String getUsername() {
+					return "user";
+				}
+
+				@Override
+				public String getPassword() {
+					return "password";
+				}
+
+			};
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)

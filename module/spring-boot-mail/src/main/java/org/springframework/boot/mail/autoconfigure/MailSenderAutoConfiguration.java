@@ -10,6 +10,7 @@ import jakarta.mail.internet.MimeMessage;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -25,6 +26,7 @@ import org.springframework.mail.MailSender;
  * @author Oliver Gierke
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @author Van Vo
  * @since 4.0.0
  */
 @AutoConfiguration
@@ -37,12 +39,12 @@ public final class MailSenderAutoConfiguration {
 
 	/**
 	 * Condition to trigger the creation of a {@link MailSender}. This kicks in if either
-	 * the host or jndi name property is set.
+	 * the host or jndi name property is set or connection details are available.
 	 */
 	static class MailSenderCondition extends AnyNestedCondition {
 
 		MailSenderCondition() {
-			super(ConfigurationPhase.PARSE_CONFIGURATION);
+			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
 		@ConditionalOnProperty("spring.mail.host")
@@ -52,6 +54,11 @@ public final class MailSenderAutoConfiguration {
 
 		@ConditionalOnProperty("spring.mail.jndi-name")
 		static class JndiNameProperty {
+
+		}
+
+		@ConditionalOnBean(MailConnectionDetails.class)
+		static class ConnectionDetailsBean {
 
 		}
 

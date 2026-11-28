@@ -21,12 +21,15 @@ dependencies {
 	compileOnly("com.fasterxml.jackson.core:jackson-annotations")
 
 	optional(project(":core:spring-boot-autoconfigure"))
+	optional(project(":core:spring-boot-docker-compose"))
+	optional(project(":core:spring-boot-testcontainers"))
 	optional(project(":module:spring-boot-health"))
 
 	runtimeOnly("org.eclipse.angus:angus-mail")
 
 	dockerTestImplementation(project(":core:spring-boot-test"))
 	dockerTestImplementation(project(":test-support:spring-boot-docker-test-support"))
+	dockerTestImplementation(testFixtures(project(":core:spring-boot-docker-compose")))
 	dockerTestImplementation("org.testcontainers:testcontainers-junit-jupiter")
 
 	testCompileOnly("com.fasterxml.jackson.core:jackson-annotations")
@@ -34,6 +37,7 @@ dependencies {
 	testImplementation(project(":core:spring-boot-test"))
 	testImplementation(project(":test-support:spring-boot-test-support"))
 	testImplementation(testFixtures(project(":core:spring-boot-autoconfigure")))
+	testImplementation(testFixtures(project(":core:spring-boot-testcontainers")))
 
 	testRuntimeOnly("ch.qos.logback:logback-classic")
 }
