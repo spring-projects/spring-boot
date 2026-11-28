@@ -12,6 +12,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.grpc.client.ClientInterceptorFilter;
 import org.springframework.grpc.client.ClientInterceptorsConfigurer;
 import org.springframework.grpc.client.InProcessGrpcChannelFactory;
@@ -21,6 +22,7 @@ import org.springframework.grpc.client.InProcessGrpcChannelFactory;
  *
  * @author Chris Bono
  * @author Phillip Webb
+ * @author WooSeung Kim
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(InProcessChannelBuilder.class)
@@ -30,13 +32,17 @@ import org.springframework.grpc.client.InProcessGrpcChannelFactory;
 class InProcessGrpcClientConfiguration {
 
 	@Bean
-	InProcessGrpcChannelFactory inProcessGrpcChannelFactory(GrpcChannelBuilderCustomizers grpcChannelBuilderCustomizers,
+	InProcessGrpcChannelFactory inProcessGrpcChannelFactory(Environment environment, GrpcClientProperties properties,
+			GrpcChannelBuilderCustomizers grpcChannelBuilderCustomizers,
 			ClientInterceptorsConfigurer interceptorsConfigurer,
 			ObjectProvider<ClientInterceptorFilter> interceptorFilter,
 			ObjectProvider<GrpcChannelFactoryCustomizer> channelFactoryCustomizers) {
 		InProcessGrpcChannelFactory factory = new InProcessGrpcChannelFactory(
 				grpcChannelBuilderCustomizers.forFactory(), interceptorsConfigurer);
 		interceptorFilter.ifAvailable(factory::setInterceptorFilter);
+		PropertiesVirtualTargets virtualTargets = new PropertiesVirtualTargets(environment, properties);
+		factory.setVirtualTargets(
+				(target) -> target.startsWith("in-process:") ? target : virtualTargets.getTarget(target));
 		channelFactoryCustomizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
 		return factory;
 	}
