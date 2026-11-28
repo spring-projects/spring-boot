@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ColorConverter}.
  *
  * @author Vladimir Tsanev
+ * @author Diego Magalhães
  */
 class ColorConverterTests {
 
@@ -269,6 +270,22 @@ class ColorConverterTests {
 		StringBuilder output = new StringBuilder();
 		newConverter(null).format(this.event, output);
 		assertThat(output).hasToString("\033[32min\033[0;39m");
+	}
+
+	@Test
+	void formatWhenAnsiDisabledAppendsPlainText() {
+		this.event.setLevel(Level.INFO);
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		try {
+			for (String options : new String[] { "faint", "bold, red", null }) {
+				StringBuilder output = new StringBuilder("pre|");
+				newConverter(options).format(this.event, output);
+				assertThat(output).hasToString("pre|in");
+			}
+		}
+		finally {
+			AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+		}
 	}
 
 	private ColorConverter newConverter(@Nullable String additionalOptions) {

@@ -5,12 +5,21 @@
 package org.springframework.boot.logging.logback;
 
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 
 import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.pattern.LiteralConverter;
+import org.jspecify.annotations.Nullable;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.ansi.AnsiOutput;
 
@@ -21,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Jan Mohr
+ * @author Diego Magalhães
  */
 class ColorConverterTests {
 
@@ -262,6 +272,64 @@ class ColorConverterTests {
 		this.event.setLevel(Level.TRACE);
 		String out = this.converter.transform(this.event, this.in);
 		assertThat(out).isEqualTo("\033[32min\033[0;39m");
+	}
+
+	@ParameterizedTest
+	@MethodSource("optionsAndLevels")
+	void convertWhenAnsiDisabledReturnsChildOutput(List<String> options, Level level) {
+		ColorConverter converter = startConverter(options, this.in);
+		this.event.setLevel(level);
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		try {
+			assertThat(converter.convert(this.event)).isEqualTo("in");
+		}
+		finally {
+			AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+		}
+	}
+
+	@Test
+	void convertWhenAnsiEnabledEncodesChildOutput() {
+		this.event.setLevel(Level.INFO);
+		assertThat(startConverter(Collections.emptyList(), this.in).convert(this.event))
+			.isEqualTo("\033[32min\033[0;39m");
+		assertThat(startConverter(List.of("faint"), this.in).convert(this.event)).isEqualTo("\033[2min\033[0;39m");
+		assertThat(startConverter(List.of("bold,red"), this.in).convert(this.event))
+			.isEqualTo("\033[1;31min\033[0;39m");
+		assertThat(startConverter(List.of("bold", "red"), this.in).convert(this.event))
+			.isEqualTo("\033[1;31min\033[0;39m");
+	}
+
+	@Test
+	void convertWhenNoChildOutput() {
+		ColorConverter converter = startConverter(Collections.emptyList(), null);
+		this.event.setLevel(Level.ERROR);
+		AnsiOutput.setEnabled(AnsiOutput.Enabled.NEVER);
+		try {
+			assertThat(converter.convert(this.event)).isEmpty();
+		}
+		finally {
+			AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
+		}
+		assertThat(converter.convert(this.event)).isEqualTo("\033[31m\033[0;39m");
+	}
+
+	static Stream<Arguments> optionsAndLevels() {
+		List<List<String>> options = List.of(Collections.emptyList(), List.of("faint"), List.of("magenta"),
+				List.of("cyan"), List.of("bold,red"), List.of("bold", "red"));
+		List<Level> levels = List.of(Level.ERROR, Level.WARN, Level.INFO, Level.DEBUG, Level.TRACE);
+		return options.stream().flatMap((option) -> levels.stream().map((level) -> Arguments.of(option, level)));
+	}
+
+	private ColorConverter startConverter(List<String> options, @Nullable String childOutput) {
+		ColorConverter converter = new ColorConverter();
+		converter.setContext(new LoggerContext());
+		converter.setOptionList(options);
+		if (childOutput != null) {
+			converter.setChildConverter(new LiteralConverter<>(childOutput));
+		}
+		converter.start();
+		return converter;
 	}
 
 	private void startWithOptions(String... options) {
