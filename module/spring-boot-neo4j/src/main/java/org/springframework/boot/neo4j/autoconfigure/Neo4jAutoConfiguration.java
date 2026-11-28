@@ -6,6 +6,7 @@ package org.springframework.boot.neo4j.autoconfigure;
 
 import java.io.File;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
@@ -188,6 +189,16 @@ public final class Neo4jAutoConfiguration {
 			}
 			if (hasKerberosTicket) {
 				return AuthTokens.kerberos(kerberosTicket);
+			}
+			URI uri = this.properties.getUri();
+			String userInfo = (uri != null) ? uri.getRawUserInfo() : null;
+			if (StringUtils.hasLength(userInfo)) {
+				int separatorIndex = userInfo.indexOf(':');
+				String uriUsername = (separatorIndex != -1) ? userInfo.substring(0, separatorIndex) : userInfo;
+				String uriPassword = (separatorIndex != -1) ? userInfo.substring(separatorIndex + 1) : "";
+				uriUsername = StringUtils.uriDecode(uriUsername, StandardCharsets.UTF_8);
+				uriPassword = StringUtils.uriDecode(uriPassword, StandardCharsets.UTF_8);
+				return AuthTokens.basic(uriUsername, uriPassword, authentication.getRealm());
 			}
 			return AuthTokens.none();
 		}
