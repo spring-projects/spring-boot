@@ -80,8 +80,8 @@ final class SecurityInfo {
 			while (entry != null) {
 				ZipContent.Entry relatedEntry = content.getEntry(entry.getName());
 				if (relatedEntry != null && entries.matches(relatedEntry.isDirectory(),
-						relatedEntry.getUncompressedSize(), relatedEntry.getCompressionMethod(),
-						() -> relatedEntry.openContent().asInputStream())) {
+						relatedEntry.getUncompressedSize(), relatedEntry.getCompressedSize(),
+						relatedEntry.getCompressionMethod(), () -> relatedEntry.openContent().asInputStream())) {
 					Certificate[] certificates = entry.getCertificates();
 					CodeSigner[] codeSigners = entry.getCodeSigners();
 					if (certificates != null || codeSigners != null) {
