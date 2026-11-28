@@ -561,6 +561,26 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
+	void stoppingAndStartingContextDoesNotCleanUpLoggingSystem() {
+		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, TestCleanupLoggingSystem.class.getName());
+		this.springApplication.setWebApplicationType(WebApplicationType.NONE);
+		ConfigurableApplicationContext context = this.springApplication.run();
+		ApplicationListener<?> listener = this.springApplication.getListeners()
+			.stream()
+			.filter(LoggingApplicationListener.class::isInstance)
+			.findFirst()
+			.get();
+		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils.getField(listener,
+				"loggingSystem");
+		assertThat(loggingSystem).isNotNull();
+		context.stop();
+		context.start();
+		assertThat(loggingSystem.cleanedUp).isFalse();
+		context.close();
+		assertThat(loggingSystem.cleanedUp).isTrue();
+	}
+
+	@Test
 	void lowPriorityPropertySourceShouldNotOverrideRootLoggerConfig() {
 		MutablePropertySources propertySources = this.context.getEnvironment().getPropertySources();
 		propertySources
