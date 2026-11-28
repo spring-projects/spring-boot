@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author MyungJoo Song
  */
 class MariaDbEnvironment {
 
@@ -28,6 +29,14 @@ class MariaDbEnvironment {
 	private final String database;
 
 	MariaDbEnvironment(Map<String, @Nullable String> env) {
+		Assert.state(!env.containsKey("MARIADB_USER_FILE"), "MARIADB_USER_FILE is not supported");
+		Assert.state(!env.containsKey("MYSQL_USER_FILE"), "MYSQL_USER_FILE is not supported");
+		Assert.state(!env.containsKey("MARIADB_PASSWORD_FILE"), "MARIADB_PASSWORD_FILE is not supported");
+		Assert.state(!env.containsKey("MYSQL_PASSWORD_FILE"), "MYSQL_PASSWORD_FILE is not supported");
+		Assert.state(!env.containsKey("MARIADB_ROOT_PASSWORD_FILE"), "MARIADB_ROOT_PASSWORD_FILE is not supported");
+		Assert.state(!env.containsKey("MYSQL_ROOT_PASSWORD_FILE"), "MYSQL_ROOT_PASSWORD_FILE is not supported");
+		Assert.state(!env.containsKey("MARIADB_DATABASE_FILE"), "MARIADB_DATABASE_FILE is not supported");
+		Assert.state(!env.containsKey("MYSQL_DATABASE_FILE"), "MYSQL_DATABASE_FILE is not supported");
 		this.username = extractUsername(env);
 		this.password = extractPassword(env);
 		this.database = extractDatabase(env);
