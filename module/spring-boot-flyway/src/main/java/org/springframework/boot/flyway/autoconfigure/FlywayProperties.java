@@ -188,8 +188,8 @@ public class FlywayProperties {
 	private @Nullable String driverClassName;
 
 	/**
-	 * JDBC url of the database to migrate. If not set, the primary configured data source
-	 * is used.
+	 * URL of the database to migrate. May be a JDBC URL or a Flyway Native Connector URL.
+	 * If not set, the primary configured data source is used.
 	 */
 	private @Nullable String url;
 
