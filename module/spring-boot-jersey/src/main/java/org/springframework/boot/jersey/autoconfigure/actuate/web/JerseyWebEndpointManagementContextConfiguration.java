@@ -18,6 +18,7 @@ import jakarta.ws.rs.ext.ContextResolver;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 import org.jspecify.annotations.Nullable;
+import tools.jackson.databind.json.JsonMapper;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.expose.EndpointExposure;
@@ -29,6 +30,7 @@ import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.actuate.endpoint.OperationResponseBody;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.jackson.EndpointJsonMapper;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -79,6 +81,14 @@ class JerseyWebEndpointManagementContextConfiguration {
 		boolean shouldRegisterLinks = shouldRegisterLinksMapping(webEndpointProperties, environment, basePath);
 		return new JerseyWebEndpointsResourcesRegistrar(webEndpointsSupplier, servletEndpointsSupplier,
 				endpointMediaTypes, basePath, shouldRegisterLinks);
+	}
+
+	@Bean
+	@ConditionalOnBean(EndpointJsonMapper.class)
+	ManagementContextResourceConfigCustomizer endpointJsonMapperResourceConfigCustomizer(
+			EndpointJsonMapper endpointJsonMapper) {
+		return (config) -> config.register(new EndpointJsonMapperContextResolver(endpointJsonMapper),
+				ContextResolver.class);
 	}
 
 	@Bean
@@ -207,6 +217,26 @@ class JerseyWebEndpointManagementContextConfiguration {
 
 		private void register(Collection<Resource> resources, ResourceConfig config) {
 			config.registerResources(new HashSet<>(resources));
+		}
+
+	}
+
+	/**
+	 * {@link ContextResolver} used to obtain the {@link JsonMapper} that should be used
+	 * for {@link OperationResponseBody} instances.
+	 */
+	@Priority(Priorities.USER - 100)
+	private static final class EndpointJsonMapperContextResolver implements ContextResolver<JsonMapper> {
+
+		private final EndpointJsonMapper mapper;
+
+		private EndpointJsonMapperContextResolver(EndpointJsonMapper mapper) {
+			this.mapper = mapper;
+		}
+
+		@Override
+		public @Nullable JsonMapper getContext(Class<?> type) {
+			return OperationResponseBody.class.isAssignableFrom(type) ? this.mapper.get() : null;
 		}
 
 	}

@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.jackson.autoconfigure.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.http.server.LocalTestWebServer;
@@ -36,13 +37,13 @@ import org.springframework.web.client.RestClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JerseyAutoConfiguration} with an ObjectMapper.
+ * Tests for {@link JerseyAutoConfiguration} with a JsonMapper.
  *
  * @author Eddú Meléndez
  * @author Andy Wilkinson
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "spring.jackson2.default-property-inclusion:non-null")
+		properties = "spring.jackson.default-property-inclusion:non-null")
 @DirtiesContext
 class JerseyAutoConfigurationObjectMapperProviderTests {
 
@@ -50,7 +51,7 @@ class JerseyAutoConfigurationObjectMapperProviderTests {
 	private ApplicationContext applicationContext;
 
 	@Test
-	void responseIsSerializedUsingAutoConfiguredObjectMapper() {
+	void responseIsSerializedUsingAutoConfiguredJsonMapper() {
 		String uri = LocalTestWebServer.obtain(this.applicationContext).uri("/rest/message");
 		ResponseEntity<String> response = RestClient.create().get().uri(uri).retrieve().toEntity(String.class);
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -118,9 +119,7 @@ class JerseyAutoConfigurationObjectMapperProviderTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@Configuration
-	@SuppressWarnings("removal")
-	@Import({ TomcatServletWebServerAutoConfiguration.class,
-			org.springframework.boot.jackson2.autoconfigure.Jackson2AutoConfiguration.class,
+	@Import({ TomcatServletWebServerAutoConfiguration.class, JacksonAutoConfiguration.class,
 			JerseyAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class })
 	protected @interface MinimalWebConfiguration {
 

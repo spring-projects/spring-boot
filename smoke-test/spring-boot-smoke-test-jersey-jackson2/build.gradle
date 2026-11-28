@@ -1,0 +1,26 @@
+/*
+ * Copyright 2012-present the original author or authors.
+ */
+
+plugins {
+	id "java"
+}
+
+description = "Spring Boot Jersey with Jackson 2 smoke test"
+
+dependencies {
+	implementation(project(":module:spring-boot-jackson2"))
+	implementation(project(":starter:spring-boot-starter-actuator"))
+	implementation(project(":starter:spring-boot-starter-jersey")) {
+		exclude group: "org.glassfish.jersey.media", module: "jersey-media-json-jackson3"
+		exclude module: "spring-boot-jackson"
+	}
+	implementation("org.glassfish.jersey.media:jersey-media-json-jackson")
+
+	testImplementation(project(":module:spring-boot-restclient"))
+	testImplementation(project(":starter:spring-boot-starter-test"))
+}
+
+tasks.named("compileTestJava") {
+	options.nullability.checking = "tests"
+}
