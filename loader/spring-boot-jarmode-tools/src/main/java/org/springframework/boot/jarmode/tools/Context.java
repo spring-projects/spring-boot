@@ -18,12 +18,14 @@ import java.util.jar.JarFile;
 
 import org.jspecify.annotations.Nullable;
 
+import org.springframework.boot.loader.launch.Launcher;
 import org.springframework.util.Assert;
 
 /**
  * Context for use by commands.
  *
  * @author Phillip Webb
+ * @author Xinwei Zhang
  */
 class Context {
 
@@ -46,15 +48,17 @@ class Context {
 	 * @param workingDir the working directory
 	 */
 	Context(File archiveFile, File workingDir) {
-		Assert.state(isExistingFile(archiveFile), "Unable to find source archive");
-		Assert.state(isJarOrWar(archiveFile), () -> "Source archive " + archiveFile + " must end with .jar or .war");
+		Assert.state(isExistingArchive(archiveFile), "Unable to find source archive");
+		Assert.state(archiveFile.isDirectory() || isJarOrWar(archiveFile),
+				() -> "Source archive " + archiveFile + " must end with .jar or .war");
 		this.archiveFile = archiveFile;
 		this.workingDir = workingDir;
 		this.relativeDir = deduceRelativeDir(archiveFile.getParentFile(), this.workingDir);
 	}
 
-	private boolean isExistingFile(@Nullable File archiveFile) {
-		return archiveFile != null && archiveFile.isFile() && archiveFile.exists();
+	private boolean isExistingArchive(@Nullable File archiveFile) {
+		return archiveFile != null && (archiveFile.isFile()
+				|| (archiveFile.isDirectory() && new File(archiveFile, JarFile.MANIFEST_NAME).isFile()));
 	}
 
 	private boolean isJarOrWar(File jarFile) {
@@ -64,7 +68,7 @@ class Context {
 
 	private static File getSourceArchiveFile() {
 		try {
-			ProtectionDomain domain = Context.class.getProtectionDomain();
+			ProtectionDomain domain = Launcher.class.getProtectionDomain();
 			CodeSource codeSource = (domain != null) ? domain.getCodeSource() : null;
 			URL location = (codeSource != null) ? codeSource.getLocation() : null;
 			File source = (location != null) ? findSource(location) : null;
