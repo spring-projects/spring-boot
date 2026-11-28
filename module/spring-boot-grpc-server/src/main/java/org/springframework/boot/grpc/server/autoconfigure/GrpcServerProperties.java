@@ -143,7 +143,8 @@ public class GrpcServerProperties {
 
 			/**
 			 * Maximum message size allowed to be received by the server. If a data size
-			 * suffix is not specified, bytes will be used.
+			 * suffix is not specified, bytes will be used. Set to '-1' to use the highest
+			 * possible limit (not recommended).
 			 */
 			@DataSizeUnit(DataUnit.BYTES)
 			private DataSize maxSize = DataSize.ofBytes(4194304);
@@ -165,7 +166,8 @@ public class GrpcServerProperties {
 
 			/**
 			 * Maximum metadata size allowed to be received by the server. If a data size
-			 * suffix is not specified, bytes will be used.
+			 * suffix is not specified, bytes will be used. Set to '-1' to use the highest
+			 * possible limit (not recommended).
 			 */
 			@DataSizeUnit(DataUnit.BYTES)
 			private DataSize maxSize = DataSize.ofBytes(8192);
