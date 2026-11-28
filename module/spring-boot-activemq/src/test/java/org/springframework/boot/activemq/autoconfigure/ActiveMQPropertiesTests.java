@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Aurélien Leboulanger
  * @author Venil Noronha
  * @author Eddú Meléndez
+ * @author Armen Petrosyan
  */
 class ActiveMQPropertiesTests {
 
@@ -47,6 +48,24 @@ class ActiveMQPropertiesTests {
 		this.properties.setBrokerUrl("tcp://activemq.example.com:71717");
 		this.properties.getEmbedded().setEnabled(false);
 		assertThat(this.properties.determineBrokerUrl()).isEqualTo("tcp://activemq.example.com:71717");
+	}
+
+	@Test
+	void sslIsDisabledByDefault() {
+		assertThat(this.properties.getSsl().isEnabled()).isFalse();
+	}
+
+	@Test
+	void sslIsEnabledWhenBundleIsSet() {
+		this.properties.getSsl().setBundle("test-bundle");
+		assertThat(this.properties.getSsl().isEnabled()).isTrue();
+	}
+
+	@Test
+	void sslCanBeDisabledWhenBundleIsSet() {
+		this.properties.getSsl().setBundle("test-bundle");
+		this.properties.getSsl().setEnabled(false);
+		assertThat(this.properties.getSsl().isEnabled()).isFalse();
 	}
 
 	@Test
