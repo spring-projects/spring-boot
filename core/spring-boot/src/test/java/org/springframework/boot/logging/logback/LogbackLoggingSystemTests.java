@@ -96,6 +96,7 @@ import static org.mockito.Mockito.times;
  * @author Jonatan Ivanov
  * @author Moritz Halbritter
  * @author Dhruv Rastogi
+ * @author Sunghwan Kwon
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions({ "log4j-core-*.jar", "log4j-api-*.jar" })
@@ -327,6 +328,22 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		assertThat(bridgeHandlerInstalled()).isTrue();
 		this.loggingSystem.cleanUp();
 		assertThat(bridgeHandlerInstalled()).isFalse();
+	}
+
+	@Test
+	void cleanUpLeavesBridgeHandlerAddedAfterInitializationInPlace() {
+		this.loggingSystem.beforeInitialize();
+		java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+		Handler applicationHandler = new SLF4JBridgeHandler();
+		rootLogger.addHandler(applicationHandler);
+		try {
+			this.loggingSystem.cleanUp();
+			assertThat(rootLogger.getHandlers()).containsExactly(applicationHandler);
+		}
+		finally {
+			rootLogger.removeHandler(applicationHandler);
+			applicationHandler.close();
+		}
 	}
 
 	@Test

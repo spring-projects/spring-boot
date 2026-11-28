@@ -77,6 +77,7 @@ import static org.mockito.Mockito.times;
  * @author Madhura Bhave
  * @author Piotr P. Karwasz
  * @author Dhruv Rastogi
+ * @author Sunghwan Kwon
  */
 @ExtendWith(OutputCaptureExtension.class)
 @ClassPathExclusions("logback-*.jar")
@@ -421,6 +422,22 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		this.loggingSystem.cleanUp();
 		java.util.logging.Logger rootLoggerAfterCleanUp = java.util.logging.Logger.getLogger("");
 		assertThat(rootLoggerAfterCleanUp.getHandlers()).doesNotHaveAnyElementsOfTypes(Log4jBridgeHandler.class);
+	}
+
+	@Test
+	void cleanUpLeavesBridgeHandlerAddedAfterInitializationInPlace() {
+		this.loggingSystem.beforeInitialize();
+		java.util.logging.Logger rootLogger = java.util.logging.Logger.getLogger("");
+		Handler applicationHandler = new Log4jBridgeHandler();
+		rootLogger.addHandler(applicationHandler);
+		try {
+			this.loggingSystem.cleanUp();
+			assertThat(rootLogger.getHandlers()).containsExactly(applicationHandler);
+		}
+		finally {
+			rootLogger.removeHandler(applicationHandler);
+			applicationHandler.close();
+		}
 	}
 
 	@Test

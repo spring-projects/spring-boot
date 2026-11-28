@@ -65,6 +65,7 @@ import org.springframework.util.StringUtils;
  * @author Ralph Goers
  * @author Piotr P. Karwasz
  * @author Dhruv Rastogi
+ * @author Sunghwan Kwon
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends AbstractLoggingSystem {
@@ -107,7 +108,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private final LoggerContext loggerContext;
 
-	private boolean bridgeHandlerInstalled;
+	private @Nullable Runnable bridgeHandlerCleanup;
 
 	/**
 	 * Create a new {@link Log4J2LoggingSystem} instance.
@@ -179,8 +180,7 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 			if (isJulUsingASingleConsoleHandlerAtMost() && !isLog4jLogManagerInstalled()
 					&& isLog4jBridgeHandlerAvailable()) {
 				removeDefaultRootHandler();
-				Log4jBridgeHandler.install(false, null, true);
-				this.bridgeHandlerInstalled = true;
+				this.bridgeHandlerCleanup = BridgeHandlerInstaller.install();
 				return true;
 			}
 		}
@@ -203,17 +203,6 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	private boolean isLog4jBridgeHandlerAvailable() {
 		return ClassUtils.isPresent(LOG4J_BRIDGE_HANDLER, getClassLoader());
-	}
-
-	private void removeLog4jBridgeHandler() {
-		removeDefaultRootHandler();
-		java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
-		for (final Handler handler : rootLogger.getHandlers()) {
-			if (handler instanceof Log4jBridgeHandler) {
-				handler.close();
-				rootLogger.removeHandler(handler);
-			}
-		}
 	}
 
 	private void removeDefaultRootHandler() {
@@ -452,9 +441,9 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 	@Override
 	public void cleanUp() {
-		if (this.bridgeHandlerInstalled) {
-			removeLog4jBridgeHandler();
-			this.bridgeHandlerInstalled = false;
+		if (this.bridgeHandlerCleanup != null) {
+			this.bridgeHandlerCleanup.run();
+			this.bridgeHandlerCleanup = null;
 		}
 		super.cleanUp();
 		LoggerContext loggerContext = getLoggerContext();
@@ -553,6 +542,23 @@ public class Log4J2LoggingSystem extends AbstractLoggingSystem {
 
 		LevelSetLoggerConfig(@Nullable String name, Level level, boolean additive) {
 			super(name, level, additive);
+		}
+
+	}
+
+	/**
+	 * Isolates the optional JUL bridge dependency.
+	 */
+	private static final class BridgeHandlerInstaller {
+
+		static Runnable install() {
+			java.util.logging.Logger rootLogger = java.util.logging.LogManager.getLogManager().getLogger("");
+			Handler handler = new Log4jBridgeHandler(false, null, true);
+			rootLogger.addHandler(handler);
+			return () -> {
+				rootLogger.removeHandler(handler);
+				handler.close();
+			};
 		}
 
 	}
